@@ -1215,6 +1215,7 @@ pub(crate) struct LoopMatchArmWithGuard {
 
 #[derive(Diagnostic)]
 #[diag(mir_build_const_continue_bad_const)]
+#[note]
 pub(crate) struct ConstContinueBadConst {
     #[primary_span]
     #[label]
@@ -1229,8 +1230,18 @@ pub(crate) struct ConstContinueMissingValue {
 }
 
 #[derive(Diagnostic)]
+#[diag(mir_build_const_continue_non_const)]
+#[note]
+pub(crate) struct ConstContinueNonConst {
+    #[primary_span]
+    #[label]
+    pub span: Span,
+}
+
+#[derive(Diagnostic)]
 #[diag(mir_build_const_continue_unknown_jump_target)]
 pub(crate) struct ConstContinueUnknownJumpTarget {
     #[primary_span]
+    #[label]
     pub span: Span,
 }

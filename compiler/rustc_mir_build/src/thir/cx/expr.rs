@@ -856,12 +856,38 @@ impl<'tcx> ThirBuildCx<'tcx> {
                                 self.tcx.dcx().emit_fatal(ConstContinueMissingValue { span })
                             };
 
+                            fn is_const(thir: &Thir<'_>, expr: ExprId) -> bool {
+                                match &thir[expr].kind {
+                                    ExprKind::Adt(box AdtExpr { fields, base, .. })
+                                        if let AdtExprBase::None = base
+                                            && fields.iter().all(|f| is_const(thir, f.expr)) =>
+                                    {
+                                        true
+                                    }
+                                    ExprKind::Scope { value, .. } => is_const(thir, *value),
+                                    ExprKind::Literal { .. }
+                                    | ExprKind::NamedConst { .. }
+                                    | ExprKind::NonHirLiteral { .. }
+                                    | ExprKind::ZstLiteral { .. }
+                                    | ExprKind::ConstParam { .. }
+                                    | ExprKind::ConstBlock { .. }
+                                    | ExprKind::StaticRef { .. } => true,
+                                    _ => false,
+                                }
+                            }
+
+                            let value = self.mirror_expr(value);
+                            if !is_const(&self.thir, value) {
+                                let span = self.thir[value].span;
+                                self.tcx.dcx().emit_fatal(ConstContinueNonConst { span })
+                            }
+
                             ExprKind::ConstContinue {
                                 label: region::Scope {
                                     local_id: target_id.local_id,
                                     data: region::ScopeData::Node,
                                 },
-                                value: self.mirror_expr(value),
+                                value,
                             }
                         }
                         Err(err) => bug!("invalid loop id for break: {}", err),

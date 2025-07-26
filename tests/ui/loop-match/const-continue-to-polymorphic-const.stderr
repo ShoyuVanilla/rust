@@ -3,6 +3,8 @@ error: could not determine the target branch for this `#[const_continue]`
    |
 LL |                         break 'blk Self::TARGET;
    |                                    ^^^^^^^^^^^^ this value is too generic
+   |
+   = note: the value must be a literal or a monomorphic const
 
 error: aborting due to 1 previous error
 

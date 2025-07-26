@@ -90,6 +90,10 @@ mir_build_const_continue_bad_const = could not determine the target branch for t
 
 mir_build_const_continue_missing_value = a `#[const_continue]` must break to a label with a value
 
+mir_build_const_continue_non_const = the value of this `#[const_continue]` is not a constant
+    .label = this value is not a constant
+    .note = the value must be a literal or a monomorphic const
+
 mir_build_const_continue_unknown_jump_target = the target of this `#[const_continue]` is not statically known
     .label = this value must be a literal or a monomorphic const
 
