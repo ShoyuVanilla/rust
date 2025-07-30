@@ -16,6 +16,8 @@ use smallvec::{SmallVec, smallvec};
 use thin_vec::ThinVec;
 use tracing::instrument;
 
+use crate::errors::MaybeConstReason;
+
 use super::errors::{InvalidAbi, InvalidAbiSuggestion, TupleStructWithDefault, UnionWithDefault};
 use super::stability::{enabled_names, gate_unstable_abi};
 use super::{
@@ -159,6 +161,7 @@ impl<'hir> LoweringContext<'_, 'hir> {
         i: &ItemKind,
     ) -> hir::ItemKind<'hir> {
         match i {
+            // TODO: HERE
             ItemKind::ExternCrate(orig_name, ident) => {
                 let ident = self.lower_ident(*ident);
                 hir::ItemKind::ExternCrate(*orig_name, ident)
@@ -365,29 +368,41 @@ impl<'hir> LoweringContext<'_, 'hir> {
                 // lifetime to be added, but rather a reference to a
                 // parent lifetime.
                 let itctx = ImplTraitContext::Universal;
+                let disallowed = if let Some(trait_ref) = trait_ref {
+                    matches!(constness, Const::No).then(|| MaybeConstReason::TraitImpl { span })
+                } else {
+                    Some(MaybeConstReason::Impl { span })
+                };
                 let (generics, (trait_ref, lowered_ty)) =
-                    self.lower_generics(ast_generics, id, itctx, |this| {
-                        let modifiers = TraitBoundModifiers {
-                            constness: BoundConstness::Never,
-                            asyncness: BoundAsyncness::Normal,
-                            // we don't use this in bound lowering
-                            polarity: BoundPolarity::Positive,
-                        };
+                    self.with_maybe_const(disallowed, |this| {
+                        self.lower_generics(ast_generics, id, itctx, |this| {
+                            let modifiers = TraitBoundModifiers {
+                                constness: BoundConstness::Never,
+                                asyncness: BoundAsyncness::Normal,
+                                // we don't use this in bound lowering
+                                polarity: BoundPolarity::Positive,
+                            };
 
-                        let trait_ref = trait_ref.as_ref().map(|trait_ref| {
-                            this.lower_trait_ref(
-                                modifiers,
-                                trait_ref,
-                                ImplTraitContext::Disallowed(ImplTraitPosition::Trait),
-                            )
-                        });
+                            let trait_ref = trait_ref.as_ref().map(|trait_ref| {
+                                // TODO: Remove this comment and comment the same thing on the PR
+                                //
+                                // This and the next `lower_ty` call are called within
+                                // `with_maybe_const` scope but there would be no issues because we
+                                // can't have trait bounds in these positions
+                                this.lower_trait_ref(
+                                    modifiers,
+                                    trait_ref,
+                                    ImplTraitContext::Disallowed(ImplTraitPosition::Trait),
+                                )
+                            });
 
-                        let lowered_ty = this.lower_ty(
-                            ty,
-                            ImplTraitContext::Disallowed(ImplTraitPosition::ImplSelf),
-                        );
+                            let lowered_ty = this.lower_ty(
+                                ty,
+                                ImplTraitContext::Disallowed(ImplTraitPosition::ImplSelf),
+                            );
 
-                        (trait_ref, lowered_ty)
+                            (trait_ref, lowered_ty)
+                        })
                     });
 
                 let new_impl_items = self
@@ -425,23 +440,30 @@ impl<'hir> LoweringContext<'_, 'hir> {
             }) => {
                 let constness = self.lower_constness(*constness);
                 let ident = self.lower_ident(*ident);
-                let (generics, (safety, items, bounds)) = self.lower_generics(
-                    generics,
-                    id,
-                    ImplTraitContext::Disallowed(ImplTraitPosition::Generic),
-                    |this| {
-                        let bounds = this.lower_param_bounds(
-                            bounds,
-                            RelaxedBoundPolicy::Forbidden(RelaxedBoundForbiddenReason::SuperTrait),
-                            ImplTraitContext::Disallowed(ImplTraitPosition::Bound),
-                        );
-                        let items = this.arena.alloc_from_iter(
-                            items.iter().map(|item| this.lower_trait_item_ref(item)),
-                        );
-                        let safety = this.lower_safety(*safety, hir::Safety::Safe);
-                        (safety, items, bounds)
-                    },
-                );
+                let disallowed =
+                    matches!(constness, Const::No).then(|| MaybeConstReason::Trait { span });
+                let (generics, (safety, items, bounds)) =
+                    self.with_maybe_const(disallowed, |this| {
+                        this.lower_generics(
+                            generics,
+                            id,
+                            ImplTraitContext::Disallowed(ImplTraitPosition::Generic),
+                            |this| {
+                                let bounds = this.lower_param_bounds(
+                                    bounds,
+                                    RelaxedBoundPolicy::Forbidden(
+                                        RelaxedBoundForbiddenReason::SuperTrait,
+                                    ),
+                                    ImplTraitContext::Disallowed(ImplTraitPosition::Bound),
+                                );
+                                let items = this.arena.alloc_from_iter(
+                                    items.iter().map(|item| this.lower_trait_item_ref(item)),
+                                );
+                                let safety = this.lower_safety(*safety, hir::Safety::Safe);
+                                (safety, items, bounds)
+                            },
+                        )
+                    });
                 hir::ItemKind::Trait(constness, *is_auto, safety, ident, generics, bounds, items)
             }
             ItemKind::TraitAlias(ident, generics, bounds) => {
@@ -1664,6 +1686,8 @@ impl<'hir> LoweringContext<'_, 'hir> {
             Safety::Safe(_) => hir::Safety::Safe,
         }
     }
+
+    // TODO: make something like `fn lower_generic_with_maybe_const(.., f: with, g: without)`?
 
     /// Return the pair of the lowered `generics` as `hir::Generics` and the evaluation of `f` with
     /// the carried impl trait definitions and bounds.

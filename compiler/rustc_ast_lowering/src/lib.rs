@@ -67,7 +67,9 @@ use smallvec::SmallVec;
 use thin_vec::ThinVec;
 use tracing::{debug, instrument, trace};
 
-use crate::errors::{AssocTyParentheses, AssocTyParenthesesSub, MisplacedImplTrait};
+use crate::errors::{
+    AssocTyParentheses, AssocTyParenthesesSub, MaybeConstReason, MisplacedImplTrait,
+};
 
 macro_rules! arena_vec {
     ($this:expr; $($x:expr),*) => (
@@ -141,6 +143,7 @@ struct LoweringContext<'a, 'hir> {
     allow_async_iterator: Arc<[Symbol]>,
     allow_for_await: Arc<[Symbol]>,
     allow_async_fn_traits: Arc<[Symbol]>,
+    disallow_maybe_const: Option<MaybeConstReason>,
 
     delayed_lints: Vec<DelayedLint>,
 
@@ -191,6 +194,7 @@ impl<'a, 'hir> LoweringContext<'a, 'hir> {
             // FIXME(gen_blocks): how does `closure_track_caller`/`async_fn_track_caller`
             // interact with `gen`/`async gen` blocks
             allow_async_iterator: [sym::gen_future, sym::async_iterator].into(),
+            disallow_maybe_const: Some(MaybeConstReason::Item),
 
             attribute_parser: AttributeParser::new(
                 tcx.sess,
@@ -933,6 +937,21 @@ impl<'a, 'hir> LoweringContext<'a, 'hir> {
         self.is_in_loop_condition = was_in_loop_condition;
 
         self.current_item = current_item;
+
+        ret
+    }
+
+    fn with_maybe_const<T>(
+        &mut self,
+        disallowed: Option<MaybeConstReason>,
+        f: impl FnOnce(&mut Self) -> T,
+    ) -> T {
+        let disallowed_maybe_const = self.disallow_maybe_const;
+        self.disallow_maybe_const = disallowed;
+
+        let ret = f(self);
+
+        self.disallow_maybe_const = disallowed_maybe_const;
 
         ret
     }

@@ -119,6 +119,18 @@ ast_lowering_match_arm_with_no_body =
     `match` arm with no body
     .suggestion = add a body after the pattern
 
+ast_lowering_maybe_const_disallowed = `[const]` is not allowed here
+    .closure = closures cannot have `[const]` trait bounds
+    .function = this function is not `const`, so it cannot have `[const]` trait bounds
+    .trait = this trait is not `const`, so it cannot have `[const]` trait bounds
+    .trait_impl = this impl is not `const`, so it cannot have `[const]` trait bounds
+    .impl = inherent impls cannot have `[const]` trait bounds
+    .trait_assoc_ty = associated types in non-`const` traits cannot have `[const]` trait bounds
+    .trait_impl_assoc_ty = associated types in non-const impls cannot have `[const]` trait bounds
+    .inherent_assoc_ty = inherent associated types cannot have `[const]` trait bounds
+    .object = trait objects cannot have `[const]` trait bounds
+    .item = this item cannot have `[const]` trait bounds
+
 ast_lowering_misplaced_double_dot =
     `..` patterns are not allowed here
     .note = only allowed in tuple, tuple struct, and slice patterns

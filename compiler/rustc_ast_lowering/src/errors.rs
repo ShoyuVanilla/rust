@@ -475,3 +475,59 @@ pub(crate) struct UnionWithDefault {
     #[primary_span]
     pub span: Span,
 }
+
+// FIXME(const_trait_impl): Consider making the note/reason the message of the diagnostic.
+// FIXME(const_trait_impl): Provide structured suggestions (e.g., add `const` here).
+#[derive(Diagnostic)]
+#[diag(ast_lowering_maybe_const_disallowed)]
+pub(crate) struct MaybeConstDisallowed {
+    #[primary_span]
+    pub span: Span,
+    #[subdiagnostic]
+    pub reason: MaybeConstReason,
+}
+
+#[derive(Subdiagnostic, Copy, Clone)]
+pub(crate) enum MaybeConstReason {
+    #[note(ast_lowering_closure)]
+    Closure,
+    #[note(ast_lowering_function)]
+    Function {
+        #[primary_span]
+        ident: Span,
+    },
+    #[note(ast_lowering_trait)]
+    Trait {
+        #[primary_span]
+        span: Span,
+    },
+    #[note(ast_lowering_trait_impl)]
+    TraitImpl {
+        #[primary_span]
+        span: Span,
+    },
+    #[note(ast_lowering_impl)]
+    Impl {
+        #[primary_span]
+        span: Span,
+    },
+    #[note(ast_lowering_trait_assoc_ty)]
+    TraitAssocTy {
+        #[primary_span]
+        span: Span,
+    },
+    #[note(ast_lowering_trait_impl_assoc_ty)]
+    TraitImplAssocTy {
+        #[primary_span]
+        span: Span,
+    },
+    #[note(ast_lowering_inherent_assoc_ty)]
+    InherentAssocTy {
+        #[primary_span]
+        span: Span,
+    },
+    #[note(ast_lowering_object)]
+    TraitObject,
+    #[note(ast_lowering_item)]
+    Item,
+}
