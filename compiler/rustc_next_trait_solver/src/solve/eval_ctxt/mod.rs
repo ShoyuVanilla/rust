@@ -48,6 +48,10 @@ enum CurrentGoalKind {
     /// These are currently the only goals whose impl where-clauses are considered to be
     /// productive steps.
     CoinductiveTrait,
+    /// `AliasRelate` goals are used for normalization and their inference constraints are
+    /// necessary to guide inference for other goals. This means that even on overflow, we don't
+    /// discard inference constraints from `AliasRelate` and return them to the caller.
+    AliasRelate,
     /// Unlike other goals, `NormalizesTo` goals act like functions with the expected term
     /// always being fully unconstrained. This would weaken inference however, as the nested
     /// goals never get the inference constraints from the actual normalized-to type.
@@ -68,6 +72,7 @@ impl CurrentGoalKind {
                     CurrentGoalKind::Misc
                 }
             }
+            ty::PredicateKind::AliasRelate(..) => CurrentGoalKind::AliasRelate,
             ty::PredicateKind::NormalizesTo(_) => CurrentGoalKind::NormalizesTo,
             _ => CurrentGoalKind::Misc,
         }
@@ -298,6 +303,7 @@ where
                 // so we treat cycles involving where-clauses of not-yet coinductive
                 // traits as ambiguous for now.
                 CurrentGoalKind::Misc => PathKind::Unknown,
+                CurrentGoalKind::AliasRelate => unreachable!(),
             },
             // Relating types is always unproductive. If we were to map proof trees to
             // corecursive functions as explained in #136824, relating types never
@@ -1304,26 +1310,31 @@ where
                 }
             };
 
-        if let Certainty::Maybe(
-            maybe_info @ MaybeInfo {
-                cause: MaybeCause::Overflow { keep_constraints: false, .. },
-                opaque_types_jank: _,
-                stalled_on_coroutines: _,
-            },
-        ) = certainty
-        {
-            // If we have overflow, it's probable that we're substituting a type
-            // into itself infinitely and any partial substitutions in the query
-            // response are probably not useful anyways, so just return an empty
-            // query response.
-            //
-            // This may prevent us from potentially useful inference, e.g.
-            // 2 candidates, one ambiguous and one overflow, which both
-            // have the same inference constraints.
-            //
-            // Changing this to retain some constraints in the future
-            // won't be a breaking change, so this is good enough for now.
-            return Ok(self.make_ambiguous_response_no_constraints(maybe_info));
+        match self.current_goal_kind {
+            CurrentGoalKind::AliasRelate | CurrentGoalKind::NormalizesTo => {}
+            CurrentGoalKind::Misc | CurrentGoalKind::CoinductiveTrait => {
+                if let Certainty::Maybe(
+                    maybe_info @ MaybeInfo {
+                        cause: MaybeCause::Overflow { keep_constraints: false, .. },
+                        opaque_types_jank: _,
+                        stalled_on_coroutines: _,
+                    },
+                ) = certainty
+                {
+                    // If we have overflow, it's probable that we're substituting a type
+                    // into itself infinitely and any partial substitutions in the query
+                    // response are probably not useful anyways, so just return an empty
+                    // query response.
+                    //
+                    // This may prevent us from potentially useful inference, e.g.
+                    // 2 candidates, one ambiguous and one overflow, which both
+                    // have the same inference constraints.
+                    //
+                    // Changing this to retain some constraints in the future
+                    // won't be a breaking change, so this is good enough for now.
+                    return Ok(self.make_ambiguous_response_no_constraints(maybe_info));
+                }
+            }
         }
 
         let external_constraints =
