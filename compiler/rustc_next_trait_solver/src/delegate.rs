@@ -32,6 +32,8 @@ pub trait SolverDelegate: Deref<Target = Self::Infcx> + Sized {
     // FIXME: Uplift the leak check into this crate.
     fn leak_check(&self, max_input_universe: ty::UniverseIndex) -> Result<(), NoSolution>;
 
+    fn universe(&self) -> ty::UniverseIndex;
+
     fn evaluate_const(
         &self,
         param_env: <Self::Interner as Interner>::ParamEnv,

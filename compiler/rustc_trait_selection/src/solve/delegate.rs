@@ -173,6 +173,10 @@ impl<'tcx> rustc_next_trait_solver::delegate::SolverDelegate for SolverDelegate<
         self.0.leak_check(max_input_universe, None).map_err(|_| NoSolution)
     }
 
+    fn universe(&self) -> ty::UniverseIndex {
+        self.0.universe()
+    }
+
     fn evaluate_const(
         &self,
         param_env: ty::ParamEnv<'tcx>,

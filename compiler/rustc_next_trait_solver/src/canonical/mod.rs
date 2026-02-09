@@ -236,6 +236,7 @@ fn unify_query_var_values<D, I>(
     D: SolverDelegate<Interner = I>,
     I: Interner,
 {
+    tracing::debug!("BEFORE UNIFY: {:?}", delegate.universe());
     assert_eq!(original_values.len(), var_values.len());
 
     for (&orig, response) in iter::zip(original_values, var_values.var_values.iter()) {
@@ -243,6 +244,7 @@ fn unify_query_var_values<D, I>(
             delegate.eq_structurally_relating_aliases(param_env, orig, response, span).unwrap();
         assert!(goals.is_empty());
     }
+    tracing::debug!("AFTER UNIFY: {:?}", delegate.universe());
 }
 
 fn register_region_constraints<D, I>(

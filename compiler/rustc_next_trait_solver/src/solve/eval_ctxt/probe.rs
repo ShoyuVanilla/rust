@@ -56,14 +56,19 @@ where
             search_graph: outer.search_graph,
             nested_goals: outer.nested_goals.clone(),
             origin_span: outer.origin_span,
+            skip_leak_check: outer.skip_leak_check,
             tainted: outer.tainted,
             inspect: outer.inspect.take_and_enter_probe(),
         };
+        tracing::debug!("PROBE WITH: {:?}", nested.delegate.universe());
         let r = nested.delegate.probe(|| {
+            tracing::debug!("INSIDE PROBE1: {:?}", nested.delegate.universe());
             let r = f(&mut nested);
             nested.inspect.probe_final_state(delegate, max_input_universe);
+            tracing::debug!("INSIDE PROBE2: {:?}", nested.delegate.universe());
             r
         });
+        tracing::debug!("PROBE END: {:?}", nested.delegate.universe());
         if !nested.inspect.is_noop() {
             let probe_kind = probe_kind(&r);
             nested.inspect.probe_kind(probe_kind);

@@ -93,7 +93,7 @@ where
     /// If some `InferCtxt` method is missing, please first think defensively about
     /// the method's compatibility with this solver, or if an existing one does
     /// the job already.
-    delegate: &'a D,
+    pub(crate) delegate: &'a D,
 
     /// The variable info for the `var_values`, only used to make an ambiguous response
     /// with no constraints.
@@ -124,6 +124,8 @@ where
     nested_goals: Vec<(GoalSource, Goal<I, I::Predicate>, Option<GoalStalledOn<I>>)>,
 
     pub(super) origin_span: I::Span,
+
+    pub(crate) skip_leak_check: bool,
 
     // Has this `EvalCtxt` errored out with `NoSolution` in `try_evaluate_added_goals`?
     //
@@ -329,6 +331,7 @@ where
             var_values: CanonicalVarValues::dummy(),
             current_goal_kind: CurrentGoalKind::Misc,
             origin_span,
+            skip_leak_check: false,
             tainted: Ok(()),
         };
         let result = f(&mut ecx);
@@ -384,6 +387,7 @@ where
             search_graph,
             nested_goals: Default::default(),
             origin_span: I::Span::dummy(),
+            skip_leak_check: false,
             tainted: Ok(()),
             inspect: proof_tree_builder.new_evaluation_step(var_values),
         };
@@ -1222,7 +1226,10 @@ where
         &mut self,
         shallow_certainty: Certainty,
     ) -> QueryResult<I> {
+        tracing::debug!("STEP1: {:?}", self.delegate.universe());
+
         self.inspect.make_canonical_response(shallow_certainty);
+        tracing::debug!("STEP2: {:?}", self.delegate.universe());
 
         let goals_certainty = self.try_evaluate_added_goals()?;
         assert_eq!(
@@ -1232,12 +1239,21 @@ where
             previous call to `try_evaluate_added_goals!`"
         );
 
-        // We only check for leaks from universes which were entered inside
-        // of the query.
-        self.delegate.leak_check(self.max_input_universe).map_err(|NoSolution| {
-            trace!("failed the leak check");
-            NoSolution
-        })?;
+        tracing::debug!(
+            "SELF_UNIV: {:?}, DEL: {:?}, SKIP: {}",
+            self.max_input_universe,
+            self.delegate.universe(),
+            self.skip_leak_check
+        );
+
+        if !self.skip_leak_check {
+            // We only check for leaks from universes which were entered inside
+            // of the query.
+            self.delegate.leak_check(self.max_input_universe).map_err(|NoSolution| {
+                trace!("failed the leak check");
+                NoSolution
+            })?;
+        }
 
         let (certainty, normalization_nested_goals) =
             match (self.current_goal_kind, shallow_certainty) {

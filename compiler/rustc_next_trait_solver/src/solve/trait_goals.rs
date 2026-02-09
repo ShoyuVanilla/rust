@@ -1274,7 +1274,8 @@ where
             I::Ty,
         ) -> Result<ty::Binder<I, Vec<I::Ty>>, NoSolution>,
     ) -> Result<Candidate<I>, NoSolution> {
-        self.probe_trait_candidate(source).enter(|ecx| {
+        tracing::debug!("BEFORE: {:?}", self.delegate.universe());
+        let res = self.probe_trait_candidate(source).enter(|ecx| {
             let goals =
                 ecx.enter_forall(constituent_tys(ecx, goal.predicate.self_ty())?, |ecx, tys| {
                     tys.into_iter()
@@ -1283,9 +1284,17 @@ where
                         })
                         .collect::<Vec<_>>()
                 });
+            tracing::debug!("WHILE: {:?}", ecx.delegate.universe());
+            if matches!(goal.predicate.self_ty().kind(), ty::CoroutineWitness(..)) {
+                tracing::debug!("SET SKIP_LEAK_CHECK");
+                ecx.skip_leak_check = true;
+            }
             ecx.add_goals(GoalSource::ImplWhereBound, goals);
             ecx.evaluate_added_goals_and_make_canonical_response(Certainty::Yes)
-        })
+        });
+        tracing::debug!("AFTER: {:?}", self.delegate.universe());
+
+        res
     }
 }
 

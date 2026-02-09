@@ -1,0 +1,529 @@
+                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP1: U0
+                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP2: U0
+                                  └─┐rustc_next_trait_solver::solve::eval_ctxt::try_evaluate_added_goals
+                                    └─┐rustc_infer::infer::relate::higher_ranked::enter_forall forall=Binder { value: TraitPredicate(<(&dyn AccessDyn,) as std::marker::Send>, polarity:Positive), bound_vars: [] }
+                                      └─┐rustc_infer::infer::relate::higher_ranked::enter_forall_and_leak_universe binder=Binder { value: TraitPredicate(<(&dyn AccessDyn,) as std::marker::Send>, polarity:Positive), bound_vars: [] }
+                                        ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked return=TraitPredicate(<(&dyn AccessDyn,) as std::marker::Send>, polarity:Positive)
+                                      ┌─┘
+                                      ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked value=TraitPredicate(<(&dyn AccessDyn,) as std::marker::Send>, polarity:Positive)
+                                      └─┐rustc_next_trait_solver::solve::trait_goals::compute_trait_goal goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: TraitPredicate(<(&dyn AccessDyn,) as std::marker::Send>, polarity:Positive) }
+                                        └─┐rustc_next_trait_solver::solve::structurally_normalize_ty ty=(&'?0 dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0,)
+                                          ├─  0ms TRACE rustc_next_trait_solver::solve return=Ok((&'?0 dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0,))
+                                        ┌─┘
+                                        └─┐rustc_next_trait_solver::solve::assembly::assemble_alias_bound_candidates
+                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE WITH: U0
+                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE1: U0
+                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE2: U0
+                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE END: U0
+                                        ┌─┘
+                                        └─┐rustc_next_trait_solver::solve::assembly::assemble_param_env_candidates
+                                        ┌─┘
+                                        └─┐rustc_next_trait_solver::solve::assembly::assemble_builtin_impl_candidates
+                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals BEFORE: U0
+                                          └─┐rustc_next_trait_solver::solve::eval_ctxt::probe::enter source=BuiltinImpl(Misc)
+                                            ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE WITH: U0
+                                            ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE1: U0
+                                            └─┐rustc_next_trait_solver::solve::assembly::structural_traits::instantiate_constituent_tys_for_auto_trait ty=(&'?0 dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0,)
+                                              ├─  0ms TRACE rustc_next_trait_solver::solve::assembly::structural_traits return=Ok(Binder { value: [&'?0 dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0], bound_vars: [] })
+                                            ┌─┘
+                                            └─┐rustc_infer::infer::relate::higher_ranked::enter_forall forall=Binder { value: [&'?0 dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0], bound_vars: [] }
+                                              └─┐rustc_infer::infer::relate::higher_ranked::enter_forall_and_leak_universe binder=Binder { value: [&'?0 dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0], bound_vars: [] }
+                                                ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked return=[&'?0 dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0]
+                                              ┌─┘
+                                              ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked value=[&'?0 dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0]
+                                            ┌─┘
+                                            ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals WHILE: U0
+                                            └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goals source=ImplWhereBound
+                                              └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goal source=ImplWhereBound, goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: Binder { value: TraitPredicate(<&dyn AccessDyn as std::marker::Send>, polarity:Positive), bound_vars: [] } }
+                                              ┌─┘
+                                            ┌─┘
+                                            └─┐rustc_next_trait_solver::solve::eval_ctxt::evaluate_added_goals_and_make_canonical_response shallow_certainty=Yes
+                                              ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP1: U0
+                                              ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP2: U0
+                                              └─┐rustc_next_trait_solver::solve::eval_ctxt::try_evaluate_added_goals
+                                                └─┐rustc_infer::infer::relate::higher_ranked::enter_forall forall=Binder { value: TraitPredicate(<&dyn AccessDyn as std::marker::Send>, polarity:Positive), bound_vars: [] }
+                                                  └─┐rustc_infer::infer::relate::higher_ranked::enter_forall_and_leak_universe binder=Binder { value: TraitPredicate(<&dyn AccessDyn as std::marker::Send>, polarity:Positive), bound_vars: [] }
+                                                    ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked return=TraitPredicate(<&dyn AccessDyn as std::marker::Send>, polarity:Positive)
+                                                  ┌─┘
+                                                  ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked value=TraitPredicate(<&dyn AccessDyn as std::marker::Send>, polarity:Positive)
+                                                  └─┐rustc_next_trait_solver::solve::trait_goals::compute_trait_goal goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: TraitPredicate(<&dyn AccessDyn as std::marker::Send>, polarity:Positive) }
+                                                    └─┐rustc_next_trait_solver::solve::structurally_normalize_ty ty=&'?0 dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0
+                                                      ├─  0ms TRACE rustc_next_trait_solver::solve return=Ok(&'?0 dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0)
+                                                    ┌─┘
+                                                    └─┐rustc_next_trait_solver::solve::assembly::assemble_alias_bound_candidates
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE WITH: U0
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE1: U0
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE2: U0
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE END: U0
+                                                    ┌─┘
+                                                    └─┐rustc_next_trait_solver::solve::assembly::assemble_param_env_candidates
+                                                    ┌─┘
+                                                    └─┐rustc_next_trait_solver::solve::assembly::assemble_builtin_impl_candidates
+                                                      ├─  0ms TRACE rustc_next_trait_solver::solve::trait_goals disqualified auto-trait implementation, def_id=DefId(2:3965 ~ core[dc26]::marker::{impl#2}), goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: TraitPredicate(<&dyn AccessDyn as std::marker::Send>, polarity:Positive) }
+                                                    ┌─┘
+                                                    └─┐rustc_next_trait_solver::solve::assembly::assemble_impl_candidates
+                                                      └─┐rustc_next_trait_solver::solve::eval_ctxt::probe::enter source=Impl(DefId(2:3965 ~ core[dc26]::marker::{impl#2}))
+                                                        ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE WITH: U0
+                                                        ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE1: U0
+                                                        └─┐rustc_next_trait_solver::solve::eval_ctxt::eq lhs=<&dyn AccessDyn as std::marker::Send>, rhs=<&_ as std::marker::Send>
+                                                          └─┐rustc_next_trait_solver::solve::eval_ctxt::relate lhs=<&dyn AccessDyn as std::marker::Send>, variance=o, rhs=<&_ as std::marker::Send>
+                                                            ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(())
+                                                          ┌─┘
+                                                          ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(())
+                                                        ┌─┘
+                                                        └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goals source=ImplWhereBound
+                                                          └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goal source=ImplWhereBound, goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: Binder { value: TraitPredicate(<_ as std::marker::Sync>, polarity:Positive), bound_vars: [] } }
+                                                          ┌─┘
+                                                        ┌─┘
+                                                        └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goals source=Misc
+                                                        ┌─┘
+                                                        └─┐rustc_next_trait_solver::solve::eval_ctxt::evaluate_added_goals_and_make_canonical_response shallow_certainty=Yes
+                                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP1: U0
+                                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP2: U0
+                                                          └─┐rustc_next_trait_solver::solve::eval_ctxt::try_evaluate_added_goals
+                                                            └─┐rustc_infer::infer::relate::higher_ranked::enter_forall forall=Binder { value: TraitPredicate(<dyn AccessDyn as std::marker::Sync>, polarity:Positive), bound_vars: [] }
+                                                              └─┐rustc_infer::infer::relate::higher_ranked::enter_forall_and_leak_universe binder=Binder { value: TraitPredicate(<dyn AccessDyn as std::marker::Sync>, polarity:Positive), bound_vars: [] }
+                                                                ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked return=TraitPredicate(<dyn AccessDyn as std::marker::Sync>, polarity:Positive)
+                                                              ┌─┘
+                                                              ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked value=TraitPredicate(<dyn AccessDyn as std::marker::Sync>, polarity:Positive)
+                                                              └─┐rustc_next_trait_solver::solve::trait_goals::compute_trait_goal goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: TraitPredicate(<dyn AccessDyn as std::marker::Sync>, polarity:Positive) }
+                                                                └─┐rustc_next_trait_solver::solve::structurally_normalize_ty ty=dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0
+                                                                  ├─  0ms TRACE rustc_next_trait_solver::solve return=Ok(dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0)
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_alias_bound_candidates
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE WITH: U0
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE1: U0
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE2: U0
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE END: U0
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_param_env_candidates
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_builtin_impl_candidates
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_impl_candidates
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_object_bound_candidates
+                                                                  └─┐rustc_next_trait_solver::solve::eval_ctxt::probe::enter source=BuiltinImpl(Object(1))
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE WITH: U0
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE1: U0
+                                                                    └─┐rustc_next_trait_solver::solve::eval_ctxt::eq lhs=<dyn AccessDyn as std::marker::Sync>, rhs=<dyn AccessDyn as std::marker::Sync>
+                                                                      └─┐rustc_next_trait_solver::solve::eval_ctxt::relate lhs=<dyn AccessDyn as std::marker::Sync>, variance=o, rhs=<dyn AccessDyn as std::marker::Sync>
+                                                                        ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(())
+                                                                      ┌─┘
+                                                                      ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(())
+                                                                    ┌─┘
+                                                                    └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goals source=ImplWhereBound
+                                                                    ┌─┘
+                                                                    └─┐rustc_next_trait_solver::solve::eval_ctxt::evaluate_added_goals_and_make_canonical_response shallow_certainty=Yes
+                                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP1: U0
+                                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP2: U0
+                                                                      └─┐rustc_next_trait_solver::solve::eval_ctxt::try_evaluate_added_goals
+                                                                      ┌─┘
+                                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt SELF_UNIV: U0, DEL: U0, SKIP: false
+                                                                      └─┐rustc_next_trait_solver::solve::eval_ctxt::compute_external_query_constraints certainty=Yes, normalization_nested_goals=NestedNormalizationGoals([])
+                                                                        ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }
+                                                                      ┌─┘
+                                                                      ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] })
+                                                                    ┌─┘
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE2: U0
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE END: U0
+                                                                  ┌─┘
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::trait_goals::merge_trait_candidates candidate_preference_mode=Marker, candidates=[Candidate { source: BuiltinImpl(Object(1)), result: Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, head_usages: CandidateHeadUsages { usages: None } }], failed_candidate_info=FailedCandidateInfo { param_env_head_usages: CandidateHeadUsages { usages: None } }
+                                                                  └─┐rustc_next_trait_solver::solve::try_merge_candidates candidates=[Candidate { source: BuiltinImpl(Object(1)), result: Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, head_usages: CandidateHeadUsages { usages: None } }]
+                                                                    ├─  0ms TRACE rustc_next_trait_solver::solve return=Some((Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, AlwaysApplicable(0)))
+                                                                  ┌─┘
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals return=Ok((Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, Some(Misc)))
+                                                                ┌─┘
+                                                              ┌─┘
+                                                            ┌─┘
+                                                            └─┐rustc_next_trait_solver::canonical::unify_query_var_values param_env=ParamEnv { caller_bounds: [] }, original_values=['?1], var_values=CanonicalVarValues { var_values: ['?1] }, span=no-location (#0)
+                                                            ┌─┘
+                                                          ┌─┘
+                                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt SELF_UNIV: U0, DEL: U0, SKIP: false
+                                                          └─┐rustc_next_trait_solver::solve::eval_ctxt::compute_external_query_constraints certainty=Yes, normalization_nested_goals=NestedNormalizationGoals([])
+                                                            ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=ExternalConstraintsData { region_constraints: [OutlivesPredicate('?1, '?0), OutlivesPredicate('?0, '?1)], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }
+                                                          ┌─┘
+                                                          ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] })
+                                                        ┌─┘
+                                                        ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE2: U0
+                                                        ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE END: U0
+                                                      ┌─┘
+                                                    ┌─┘
+                                                    └─┐rustc_next_trait_solver::solve::assembly::assemble_object_bound_candidates
+                                                    ┌─┘
+                                                    └─┐rustc_next_trait_solver::solve::trait_goals::merge_trait_candidates candidate_preference_mode=Marker, candidates=[Candidate { source: Impl(DefId(2:3965 ~ core[dc26]::marker::{impl#2})), result: Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, head_usages: CandidateHeadUsages { usages: None } }], failed_candidate_info=FailedCandidateInfo { param_env_head_usages: CandidateHeadUsages { usages: None } }
+                                                      └─┐rustc_next_trait_solver::solve::try_merge_candidates candidates=[Candidate { source: Impl(DefId(2:3965 ~ core[dc26]::marker::{impl#2})), result: Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, head_usages: CandidateHeadUsages { usages: None } }]
+                                                        ├─  0ms TRACE rustc_next_trait_solver::solve return=Some((Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, AlwaysApplicable(0)))
+                                                      ┌─┘
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals return=Ok((Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, Some(Misc)))
+                                                    ┌─┘
+                                                  ┌─┘
+                                                ┌─┘
+                                                └─┐rustc_next_trait_solver::canonical::unify_query_var_values param_env=ParamEnv { caller_bounds: [] }, original_values=['?0], var_values=CanonicalVarValues { var_values: ['?0] }, span=no-location (#0)
+                                                ┌─┘
+                                              ┌─┘
+                                              ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt SELF_UNIV: U0, DEL: U0, SKIP: false
+                                              └─┐rustc_next_trait_solver::solve::eval_ctxt::compute_external_query_constraints certainty=Yes, normalization_nested_goals=NestedNormalizationGoals([])
+                                                ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }
+                                              ┌─┘
+                                              ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] })
+                                            ┌─┘
+                                            ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE2: U0
+                                            ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE END: U0
+                                          ┌─┘
+                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals AFTER: U0
+                                        ┌─┘
+                                        └─┐rustc_next_trait_solver::solve::assembly::assemble_impl_candidates
+                                        ┌─┘
+                                        └─┐rustc_next_trait_solver::solve::assembly::assemble_object_bound_candidates
+                                        ┌─┘
+                                        └─┐rustc_next_trait_solver::solve::trait_goals::merge_trait_candidates candidate_preference_mode=Marker, candidates=[Candidate { source: BuiltinImpl(Misc), result: Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, head_usages: CandidateHeadUsages { usages: None } }], failed_candidate_info=FailedCandidateInfo { param_env_head_usages: CandidateHeadUsages { usages: None } }
+                                          └─┐rustc_next_trait_solver::solve::try_merge_candidates candidates=[Candidate { source: BuiltinImpl(Misc), result: Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, head_usages: CandidateHeadUsages { usages: None } }]
+                                            ├─  0ms TRACE rustc_next_trait_solver::solve return=Some((Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, AlwaysApplicable(0)))
+                                          ┌─┘
+                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals return=Ok((Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, Some(Misc)))
+                                        ┌─┘
+                                      ┌─┘
+                                    ┌─┘
+                                    └─┐rustc_next_trait_solver::canonical::unify_query_var_values param_env=ParamEnv { caller_bounds: [] }, original_values=['?0], var_values=CanonicalVarValues { var_values: ['?0] }, span=no-location (#0)
+                                    ┌─┘
+                                    └─┐rustc_infer::infer::relate::higher_ranked::enter_forall forall=Binder { value: TraitPredicate(<{coroutine witness@dingo.rs:23:22: 23:27} as std::marker::Send>, polarity:Positive), bound_vars: [] }
+                                      └─┐rustc_infer::infer::relate::higher_ranked::enter_forall_and_leak_universe binder=Binder { value: TraitPredicate(<{coroutine witness@dingo.rs:23:22: 23:27} as std::marker::Send>, polarity:Positive), bound_vars: [] }
+                                        ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked return=TraitPredicate(<{coroutine witness@dingo.rs:23:22: 23:27} as std::marker::Send>, polarity:Positive)
+                                      ┌─┘
+                                      ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked value=TraitPredicate(<{coroutine witness@dingo.rs:23:22: 23:27} as std::marker::Send>, polarity:Positive)
+                                      └─┐rustc_next_trait_solver::solve::trait_goals::compute_trait_goal goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: TraitPredicate(<{coroutine witness@dingo.rs:23:22: 23:27} as std::marker::Send>, polarity:Positive) }
+                                        └─┐rustc_next_trait_solver::solve::structurally_normalize_ty ty=CoroutineWitness(DefId(0:15 ~ dingo[2b9f]::{impl#1}::poll_next::{closure#0}), [])
+                                          ├─  0ms TRACE rustc_next_trait_solver::solve return=Ok(CoroutineWitness(DefId(0:15 ~ dingo[2b9f]::{impl#1}::poll_next::{closure#0}), []))
+                                        ┌─┘
+                                        └─┐rustc_next_trait_solver::solve::assembly::assemble_alias_bound_candidates
+                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE WITH: U0
+                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE1: U0
+                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE2: U0
+                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE END: U0
+                                        ┌─┘
+                                        └─┐rustc_next_trait_solver::solve::assembly::assemble_param_env_candidates
+                                        ┌─┘
+                                        └─┐rustc_next_trait_solver::solve::assembly::assemble_builtin_impl_candidates
+                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals BEFORE: U0
+                                          └─┐rustc_next_trait_solver::solve::eval_ctxt::probe::enter source=BuiltinImpl(Misc)
+                                            ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE WITH: U0
+                                            ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE1: U0
+                                            └─┐rustc_next_trait_solver::solve::assembly::structural_traits::instantiate_constituent_tys_for_auto_trait ty=CoroutineWitness(DefId(0:15 ~ dingo[2b9f]::{impl#1}::poll_next::{closure#0}), [])
+                                              ├─  0ms TRACE rustc_next_trait_solver::solve::assembly::structural_traits return=Ok(Binder { value: [Alias(Opaque, AliasTy { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '^0, '^1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. })], bound_vars: [Region(BrAnon), Region(BrAnon)] })
+                                            ┌─┘
+                                            └─┐rustc_infer::infer::relate::higher_ranked::enter_forall forall=Binder { value: [Alias(Opaque, AliasTy { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '^0, '^1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. })], bound_vars: [Region(BrAnon), Region(BrAnon)] }
+                                              └─┐rustc_infer::infer::relate::higher_ranked::enter_forall_and_leak_universe binder=Binder { value: [Alias(Opaque, AliasTy { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '^0, '^1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. })], bound_vars: [Region(BrAnon), Region(BrAnon)] }
+                                                ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked next_universe=U1
+                                                ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked return=[Alias(Opaque, AliasTy { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '!1_0, '!1_1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. })]
+                                              ┌─┘
+                                              ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked value=[Alias(Opaque, AliasTy { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '!1_0, '!1_1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. })]
+                                            ┌─┘
+                                            ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals WHILE: U1
+                                            ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals SET SKIP_LEAK_CHECK
+                                            └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goals source=ImplWhereBound
+                                              └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goal source=ImplWhereBound, goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: Binder { value: TraitPredicate(<impl std::future::Future<Output = <dyn AccessDyn as Access>::Reader> + std::marker::Send as std::marker::Send>, polarity:Positive), bound_vars: [] } }
+                                                └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goal source=NormalizeGoal(Coinductive), goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: Binder { value: AliasRelate(Term::Ty(Alias(Opaque, AliasTy { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '!1_0, '!1_1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. })), Equate, Term::Ty(?0t)), bound_vars: [] } }
+                                                ┌─┘
+                                              ┌─┘
+                                            ┌─┘
+                                            └─┐rustc_next_trait_solver::solve::eval_ctxt::evaluate_added_goals_and_make_canonical_response shallow_certainty=Yes
+                                              ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP1: U1
+                                              ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP2: U1
+                                              └─┐rustc_next_trait_solver::solve::eval_ctxt::try_evaluate_added_goals
+                                                └─┐rustc_infer::infer::relate::higher_ranked::enter_forall forall=Binder { value: AliasRelate(Term::Ty(Alias(Opaque, AliasTy { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, '?1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. })), Equate, Term::Ty(?0t)), bound_vars: [] }
+                                                  └─┐rustc_infer::infer::relate::higher_ranked::enter_forall_and_leak_universe binder=Binder { value: AliasRelate(Term::Ty(Alias(Opaque, AliasTy { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, '?1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. })), Equate, Term::Ty(?0t)), bound_vars: [] }
+                                                    ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked return=AliasRelate(Term::Ty(Alias(Opaque, AliasTy { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, '?1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. })), Equate, Term::Ty(?0t))
+                                                  ┌─┘
+                                                  ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked value=AliasRelate(Term::Ty(Alias(Opaque, AliasTy { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, '?1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. })), Equate, Term::Ty(?0t))
+                                                  └─┐rustc_next_trait_solver::solve::alias_relate::compute_alias_relate_goal goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: (Term::Ty(Alias(Opaque, AliasTy { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, '?1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. })), Term::Ty(?0t), Equate) }
+                                                    └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goal source=TypeRelating, goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: Binder { value: NormalizesTo(AliasTerm { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, '?1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. }, Term::Ty(?1t)), bound_vars: [] } }
+                                                    ┌─┘
+                                                    └─┐rustc_next_trait_solver::solve::eval_ctxt::try_evaluate_added_goals
+                                                      └─┐rustc_infer::infer::relate::higher_ranked::enter_forall forall=Binder { value: NormalizesTo(AliasTerm { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, '?1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. }, Term::Ty(?0t)), bound_vars: [] }
+                                                        └─┐rustc_infer::infer::relate::higher_ranked::enter_forall_and_leak_universe binder=Binder { value: NormalizesTo(AliasTerm { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, '?1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. }, Term::Ty(?0t)), bound_vars: [] }
+                                                          ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked return=NormalizesTo(AliasTerm { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, '?1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. }, Term::Ty(?0t))
+                                                        ┌─┘
+                                                        ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked value=NormalizesTo(AliasTerm { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, '?1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. }, Term::Ty(?0t))
+                                                        └─┐rustc_next_trait_solver::solve::normalizes_to::compute_normalizes_to_goal goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: NormalizesTo(AliasTerm { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, '?1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. }, Term::Ty(?0t)) }
+                                                          └─┐rustc_next_trait_solver::solve::eval_ctxt::term_is_fully_unconstrained goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: NormalizesTo(AliasTerm { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, '?1], def_id: DefId(0:6 ~ dingo[2b9f]::Access::read::{opaque#0}), .. }, Term::Ty(?0t)) }
+                                                            ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=true
+                                                          ┌─┘
+                                                          └─┐rustc_next_trait_solver::solve::eval_ctxt::eq lhs=?0t, rhs=Coroutine(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, (), std::future::ResumeTy, (), Alias(Projection, AliasTy { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0], def_id: DefId(0:4 ~ dingo[2b9f]::Access::Reader), .. }), ()])
+                                                            └─┐rustc_next_trait_solver::solve::eval_ctxt::relate lhs=?0t, variance=o, rhs=Coroutine(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, (), std::future::ResumeTy, (), Alias(Projection, AliasTy { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0], def_id: DefId(0:4 ~ dingo[2b9f]::Access::Reader), .. }), ()])
+                                                              └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goal source=TypeRelating, goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: Binder { value: AliasRelate(Term::Ty(?2t), Equate, Term::Ty(Alias(Projection, AliasTy { args: [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0], def_id: DefId(0:4 ~ dingo[2b9f]::Access::Reader), .. }))), bound_vars: [] } }
+                                                              ┌─┘
+                                                              ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(())
+                                                            ┌─┘
+                                                            ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(())
+                                                          ┌─┘
+                                                          └─┐rustc_next_trait_solver::solve::eval_ctxt::evaluate_added_goals_and_make_canonical_response shallow_certainty=Yes
+                                                            ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP1: U0
+                                                            ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP2: U0
+                                                            └─┐rustc_next_trait_solver::solve::eval_ctxt::try_evaluate_added_goals
+                                                              └─┐rustc_next_trait_solver::canonical::unify_query_var_values param_env=ParamEnv { caller_bounds: [] }, original_values=[?1t, '?0], var_values=CanonicalVarValues { var_values: [(), 'static] }, span=no-location (#0)
+                                                              ┌─┘
+                                                            ┌─┘
+                                                            ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt SELF_UNIV: U0, DEL: U0, SKIP: false
+                                                            └─┐rustc_next_trait_solver::solve::eval_ctxt::compute_external_query_constraints certainty=Yes, normalization_nested_goals=NestedNormalizationGoals([])
+                                                              ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=ExternalConstraintsData { region_constraints: [OutlivesPredicate('?0, 'static)], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }
+                                                            ┌─┘
+                                                            ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['static, '^c_0, Coroutine(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + 'static, (), std::future::ResumeTy, (), (), ()])] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] })
+                                                          ┌─┘
+                                                          ├─  0ms TRACE rustc_next_trait_solver::solve::normalizes_to return=Ok(Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['static, '^c_0, Coroutine(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + 'static, (), std::future::ResumeTy, (), (), ()])] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] })
+                                                        ┌─┘
+                                                      ┌─┘
+                                                      └─┐rustc_next_trait_solver::canonical::unify_query_var_values param_env=ParamEnv { caller_bounds: [] }, original_values=['?0, '?1, ?2t], var_values=CanonicalVarValues { var_values: ['static, '?1, Coroutine(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + 'static, (), std::future::ResumeTy, (), (), ()])] }, span=no-location (#0)
+                                                      ┌─┘
+                                                      ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt nested_goals=[]
+                                                      └─┐rustc_next_trait_solver::solve::eval_ctxt::eq_structurally_relating_aliases lhs=Term::Ty(?1t), rhs=Term::Ty(?2t)
+                                                        ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(())
+                                                      ┌─┘
+                                                    ┌─┘
+                                                    ├─  0ms TRACE rustc_next_trait_solver::solve::alias_relate lhs=Term::Ty(Coroutine(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + 'static, (), std::future::ResumeTy, (), (), ()])), rhs=Term::Ty(?0t)
+                                                    └─┐rustc_next_trait_solver::solve::eval_ctxt::relate lhs=Term::Ty(Coroutine(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + 'static, (), std::future::ResumeTy, (), (), ()])), variance=o, rhs=Term::Ty(?0t)
+                                                      ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(())
+                                                    ┌─┘
+                                                    └─┐rustc_next_trait_solver::solve::eval_ctxt::evaluate_added_goals_and_make_canonical_response shallow_certainty=Yes
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP1: U0
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP2: U0
+                                                      └─┐rustc_next_trait_solver::solve::eval_ctxt::try_evaluate_added_goals
+                                                      ┌─┘
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt SELF_UNIV: U0, DEL: U0, SKIP: false
+                                                      └─┐rustc_next_trait_solver::solve::eval_ctxt::compute_external_query_constraints certainty=Yes, normalization_nested_goals=NestedNormalizationGoals([])
+                                                        ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=ExternalConstraintsData { region_constraints: [OutlivesPredicate('?0, 'static)], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }
+                                                      ┌─┘
+                                                      ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['static, '^c_0, Coroutine(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + 'static, (), std::future::ResumeTy, (), (), ()])] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] })
+                                                    ┌─┘
+                                                    ├─  0ms TRACE rustc_next_trait_solver::solve::alias_relate return=Ok(Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['static, '^c_0, Coroutine(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + 'static, (), std::future::ResumeTy, (), (), ()])] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] })
+                                                  ┌─┘
+                                                ┌─┘
+                                                └─┐rustc_next_trait_solver::canonical::unify_query_var_values param_env=ParamEnv { caller_bounds: [] }, original_values=['!1_0, '!1_1, ?0t], var_values=CanonicalVarValues { var_values: ['static, '!1_1, Coroutine(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + 'static, (), std::future::ResumeTy, (), (), ()])] }, span=no-location (#0)
+                                                ┌─┘
+                                                └─┐rustc_infer::infer::relate::higher_ranked::enter_forall forall=Binder { value: TraitPredicate(<{async block@dingo.rs:6:9: 6:14} as std::marker::Send>, polarity:Positive), bound_vars: [] }
+                                                  └─┐rustc_infer::infer::relate::higher_ranked::enter_forall_and_leak_universe binder=Binder { value: TraitPredicate(<{async block@dingo.rs:6:9: 6:14} as std::marker::Send>, polarity:Positive), bound_vars: [] }
+                                                    ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked return=TraitPredicate(<{async block@dingo.rs:6:9: 6:14} as std::marker::Send>, polarity:Positive)
+                                                  ┌─┘
+                                                  ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked value=TraitPredicate(<{async block@dingo.rs:6:9: 6:14} as std::marker::Send>, polarity:Positive)
+                                                  └─┐rustc_next_trait_solver::solve::trait_goals::compute_trait_goal goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: TraitPredicate(<{async block@dingo.rs:6:9: 6:14} as std::marker::Send>, polarity:Positive) }
+                                                    └─┐rustc_next_trait_solver::solve::structurally_normalize_ty ty=Coroutine(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, (), std::future::ResumeTy, (), (), ()])
+                                                      ├─  0ms TRACE rustc_next_trait_solver::solve return=Ok(Coroutine(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, (), std::future::ResumeTy, (), (), ()]))
+                                                    ┌─┘
+                                                    └─┐rustc_next_trait_solver::solve::assembly::assemble_alias_bound_candidates
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE WITH: U0
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE1: U0
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE2: U0
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE END: U0
+                                                    ┌─┘
+                                                    └─┐rustc_next_trait_solver::solve::assembly::assemble_param_env_candidates
+                                                    ┌─┘
+                                                    └─┐rustc_next_trait_solver::solve::assembly::assemble_builtin_impl_candidates
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals BEFORE: U0
+                                                      └─┐rustc_next_trait_solver::solve::eval_ctxt::probe::enter source=BuiltinImpl(Misc)
+                                                        ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE WITH: U0
+                                                        ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE1: U0
+                                                        └─┐rustc_next_trait_solver::solve::assembly::structural_traits::instantiate_constituent_tys_for_auto_trait ty=Coroutine(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0, (), std::future::ResumeTy, (), (), ()])
+                                                          ├─  0ms TRACE rustc_next_trait_solver::solve::assembly::structural_traits return=Ok(Binder { value: [(), CoroutineWitness(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0])], bound_vars: [] })
+                                                        ┌─┘
+                                                        └─┐rustc_infer::infer::relate::higher_ranked::enter_forall forall=Binder { value: [(), CoroutineWitness(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0])], bound_vars: [] }
+                                                          └─┐rustc_infer::infer::relate::higher_ranked::enter_forall_and_leak_universe binder=Binder { value: [(), CoroutineWitness(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0])], bound_vars: [] }
+                                                            ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked return=[(), CoroutineWitness(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0])]
+                                                          ┌─┘
+                                                          ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked value=[(), CoroutineWitness(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0])]
+                                                        ┌─┘
+                                                        ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals WHILE: U0
+                                                        └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goals source=ImplWhereBound
+                                                          └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goal source=ImplWhereBound, goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: Binder { value: TraitPredicate(<() as std::marker::Send>, polarity:Positive), bound_vars: [] } }
+                                                          ┌─┘
+                                                          └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goal source=ImplWhereBound, goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: Binder { value: TraitPredicate(<{coroutine witness@dingo.rs:6:9: 6:14} as std::marker::Send>, polarity:Positive), bound_vars: [] } }
+                                                          ┌─┘
+                                                        ┌─┘
+                                                        └─┐rustc_next_trait_solver::solve::eval_ctxt::evaluate_added_goals_and_make_canonical_response shallow_certainty=Yes
+                                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP1: U0
+                                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP2: U0
+                                                          └─┐rustc_next_trait_solver::solve::eval_ctxt::try_evaluate_added_goals
+                                                            └─┐rustc_infer::infer::relate::higher_ranked::enter_forall forall=Binder { value: TraitPredicate(<() as std::marker::Send>, polarity:Positive), bound_vars: [] }
+                                                              └─┐rustc_infer::infer::relate::higher_ranked::enter_forall_and_leak_universe binder=Binder { value: TraitPredicate(<() as std::marker::Send>, polarity:Positive), bound_vars: [] }
+                                                                ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked return=TraitPredicate(<() as std::marker::Send>, polarity:Positive)
+                                                              ┌─┘
+                                                              ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked value=TraitPredicate(<() as std::marker::Send>, polarity:Positive)
+                                                              └─┐rustc_next_trait_solver::solve::trait_goals::compute_trait_goal goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: TraitPredicate(<() as std::marker::Send>, polarity:Positive) }
+                                                                └─┐rustc_next_trait_solver::solve::structurally_normalize_ty ty=()
+                                                                  ├─  0ms TRACE rustc_next_trait_solver::solve return=Ok(())
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_alias_bound_candidates
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE WITH: U0
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE1: U0
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE2: U0
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE END: U0
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_param_env_candidates
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_builtin_impl_candidates
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals BEFORE: U0
+                                                                  └─┐rustc_next_trait_solver::solve::eval_ctxt::probe::enter source=BuiltinImpl(Misc)
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE WITH: U0
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE1: U0
+                                                                    └─┐rustc_next_trait_solver::solve::assembly::structural_traits::instantiate_constituent_tys_for_auto_trait ty=()
+                                                                      ├─  0ms TRACE rustc_next_trait_solver::solve::assembly::structural_traits return=Ok(Binder { value: [], bound_vars: [] })
+                                                                    ┌─┘
+                                                                    └─┐rustc_infer::infer::relate::higher_ranked::enter_forall forall=Binder { value: [], bound_vars: [] }
+                                                                      └─┐rustc_infer::infer::relate::higher_ranked::enter_forall_and_leak_universe binder=Binder { value: [], bound_vars: [] }
+                                                                        ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked return=[]
+                                                                      ┌─┘
+                                                                      ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked value=[]
+                                                                    ┌─┘
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals WHILE: U0
+                                                                    └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goals source=ImplWhereBound
+                                                                    ┌─┘
+                                                                    └─┐rustc_next_trait_solver::solve::eval_ctxt::evaluate_added_goals_and_make_canonical_response shallow_certainty=Yes
+                                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP1: U0
+                                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP2: U0
+                                                                      └─┐rustc_next_trait_solver::solve::eval_ctxt::try_evaluate_added_goals
+                                                                      ┌─┘
+                                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt SELF_UNIV: U0, DEL: U0, SKIP: false
+                                                                      └─┐rustc_next_trait_solver::solve::eval_ctxt::compute_external_query_constraints certainty=Yes, normalization_nested_goals=NestedNormalizationGoals([])
+                                                                        ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }
+                                                                      ┌─┘
+                                                                      ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: [] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [] })
+                                                                    ┌─┘
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE2: U0
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE END: U0
+                                                                  ┌─┘
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals AFTER: U0
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_impl_candidates
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_object_bound_candidates
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::trait_goals::merge_trait_candidates candidate_preference_mode=Marker, candidates=[Candidate { source: BuiltinImpl(Misc), result: Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: [] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [] }, head_usages: CandidateHeadUsages { usages: None } }], failed_candidate_info=FailedCandidateInfo { param_env_head_usages: CandidateHeadUsages { usages: None } }
+                                                                  └─┐rustc_next_trait_solver::solve::try_merge_candidates candidates=[Candidate { source: BuiltinImpl(Misc), result: Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: [] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [] }, head_usages: CandidateHeadUsages { usages: None } }]
+                                                                    ├─  0ms TRACE rustc_next_trait_solver::solve return=Some((Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: [] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [] }, AlwaysApplicable(0)))
+                                                                  ┌─┘
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals return=Ok((Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: [] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [] }, Some(Misc)))
+                                                                ┌─┘
+                                                              ┌─┘
+                                                            ┌─┘
+                                                            └─┐rustc_next_trait_solver::canonical::unify_query_var_values param_env=ParamEnv { caller_bounds: [] }, original_values=[], var_values=CanonicalVarValues { var_values: [] }, span=no-location (#0)
+                                                            ┌─┘
+                                                            └─┐rustc_infer::infer::relate::higher_ranked::enter_forall forall=Binder { value: TraitPredicate(<{coroutine witness@dingo.rs:6:9: 6:14} as std::marker::Send>, polarity:Positive), bound_vars: [] }
+                                                              └─┐rustc_infer::infer::relate::higher_ranked::enter_forall_and_leak_universe binder=Binder { value: TraitPredicate(<{coroutine witness@dingo.rs:6:9: 6:14} as std::marker::Send>, polarity:Positive), bound_vars: [] }
+                                                                ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked return=TraitPredicate(<{coroutine witness@dingo.rs:6:9: 6:14} as std::marker::Send>, polarity:Positive)
+                                                              ┌─┘
+                                                              ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked value=TraitPredicate(<{coroutine witness@dingo.rs:6:9: 6:14} as std::marker::Send>, polarity:Positive)
+                                                              └─┐rustc_next_trait_solver::solve::trait_goals::compute_trait_goal goal=Goal { param_env: ParamEnv { caller_bounds: [] }, predicate: TraitPredicate(<{coroutine witness@dingo.rs:6:9: 6:14} as std::marker::Send>, polarity:Positive) }
+                                                                └─┐rustc_next_trait_solver::solve::structurally_normalize_ty ty=CoroutineWitness(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0])
+                                                                  ├─  0ms TRACE rustc_next_trait_solver::solve return=Ok(CoroutineWitness(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0]))
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_alias_bound_candidates
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE WITH: U0
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE1: U0
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE2: U0
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE END: U0
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_param_env_candidates
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_builtin_impl_candidates
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals BEFORE: U0
+                                                                  └─┐rustc_next_trait_solver::solve::eval_ctxt::probe::enter source=BuiltinImpl(Misc)
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE WITH: U0
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE1: U0
+                                                                    └─┐rustc_next_trait_solver::solve::assembly::structural_traits::instantiate_constituent_tys_for_auto_trait ty=CoroutineWitness(DefId(0:7 ~ dingo[2b9f]::Access::read::{closure#0}), [dyn [Binder { value: Trait(AccessDyn), bound_vars: [] }] + '?0])
+                                                                      ├─  0ms TRACE rustc_next_trait_solver::solve::assembly::structural_traits return=Ok(Binder { value: [], bound_vars: [] })
+                                                                    ┌─┘
+                                                                    └─┐rustc_infer::infer::relate::higher_ranked::enter_forall forall=Binder { value: [], bound_vars: [] }
+                                                                      └─┐rustc_infer::infer::relate::higher_ranked::enter_forall_and_leak_universe binder=Binder { value: [], bound_vars: [] }
+                                                                        ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked return=[]
+                                                                      ┌─┘
+                                                                      ├─  0ms DEBUG rustc_infer::infer::relate::higher_ranked value=[]
+                                                                    ┌─┘
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals WHILE: U0
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals SET SKIP_LEAK_CHECK
+                                                                    └─┐rustc_next_trait_solver::solve::eval_ctxt::add_goals source=ImplWhereBound
+                                                                    ┌─┘
+                                                                    └─┐rustc_next_trait_solver::solve::eval_ctxt::evaluate_added_goals_and_make_canonical_response shallow_certainty=Yes
+                                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP1: U0
+                                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt STEP2: U0
+                                                                      └─┐rustc_next_trait_solver::solve::eval_ctxt::try_evaluate_added_goals
+                                                                      ┌─┘
+                                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt SELF_UNIV: U0, DEL: U0, SKIP: true
+                                                                      └─┐rustc_next_trait_solver::solve::eval_ctxt::compute_external_query_constraints certainty=Yes, normalization_nested_goals=NestedNormalizationGoals([])
+                                                                        ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }
+                                                                      ┌─┘
+                                                                      ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] })
+                                                                    ┌─┘
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE2: U0
+                                                                    ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE END: U0
+                                                                  ┌─┘
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals AFTER: U0
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_impl_candidates
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::assembly::assemble_object_bound_candidates
+                                                                ┌─┘
+                                                                └─┐rustc_next_trait_solver::solve::trait_goals::merge_trait_candidates candidate_preference_mode=Marker, candidates=[Candidate { source: BuiltinImpl(Misc), result: Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, head_usages: CandidateHeadUsages { usages: None } }], failed_candidate_info=FailedCandidateInfo { param_env_head_usages: CandidateHeadUsages { usages: None } }
+                                                                  └─┐rustc_next_trait_solver::solve::try_merge_candidates candidates=[Candidate { source: BuiltinImpl(Misc), result: Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, head_usages: CandidateHeadUsages { usages: None } }]
+                                                                    ├─  0ms TRACE rustc_next_trait_solver::solve return=Some((Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, AlwaysApplicable(0)))
+                                                                  ┌─┘
+                                                                  ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals return=Ok((Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, Some(Misc)))
+                                                                ┌─┘
+                                                              ┌─┘
+                                                            ┌─┘
+                                                            └─┐rustc_next_trait_solver::canonical::unify_query_var_values param_env=ParamEnv { caller_bounds: [] }, original_values=['?0], var_values=CanonicalVarValues { var_values: ['?0] }, span=no-location (#0)
+                                                            ┌─┘
+                                                          ┌─┘
+                                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt SELF_UNIV: U0, DEL: U0, SKIP: false
+                                                          └─┐rustc_next_trait_solver::solve::eval_ctxt::compute_external_query_constraints certainty=Yes, normalization_nested_goals=NestedNormalizationGoals([])
+                                                            ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }
+                                                          ┌─┘
+                                                          ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] })
+                                                        ┌─┘
+                                                        ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE2: U0
+                                                        ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE END: U0
+                                                      ┌─┘
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals AFTER: U0
+                                                    ┌─┘
+                                                    └─┐rustc_next_trait_solver::solve::assembly::assemble_impl_candidates
+                                                    ┌─┘
+                                                    └─┐rustc_next_trait_solver::solve::assembly::assemble_object_bound_candidates
+                                                    ┌─┘
+                                                    └─┐rustc_next_trait_solver::solve::trait_goals::merge_trait_candidates candidate_preference_mode=Marker, candidates=[Candidate { source: BuiltinImpl(Misc), result: Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, head_usages: CandidateHeadUsages { usages: None } }], failed_candidate_info=FailedCandidateInfo { param_env_head_usages: CandidateHeadUsages { usages: None } }
+                                                      └─┐rustc_next_trait_solver::solve::try_merge_candidates candidates=[Candidate { source: BuiltinImpl(Misc), result: Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, head_usages: CandidateHeadUsages { usages: None } }]
+                                                        ├─  0ms TRACE rustc_next_trait_solver::solve return=Some((Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, AlwaysApplicable(0)))
+                                                      ┌─┘
+                                                      ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals return=Ok((Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: ['^c_0] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U0, var_kinds: [Region(U0)] }, Some(Misc)))
+                                                    ┌─┘
+                                                  ┌─┘
+                                                ┌─┘
+                                                └─┐rustc_next_trait_solver::canonical::unify_query_var_values param_env=ParamEnv { caller_bounds: [] }, original_values=['static], var_values=CanonicalVarValues { var_values: ['static] }, span=no-location (#0)
+                                                ┌─┘
+                                              ┌─┘
+                                              ├─  0ms DEBUG rustc_next_trait_solver::solve::eval_ctxt SELF_UNIV: U0, DEL: U1, SKIP: true
+                                              └─┐rustc_next_trait_solver::solve::eval_ctxt::compute_external_query_constraints certainty=Yes, normalization_nested_goals=NestedNormalizationGoals([])
+                                                ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=ExternalConstraintsData { region_constraints: [OutlivesPredicate('!1_0, 'static)], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }
+                                              ┌─┘
+                                              ├─  0ms TRACE rustc_next_trait_solver::solve::eval_ctxt return=Ok(Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: [] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [OutlivesPredicate('^c_0, 'static)], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U1, var_kinds: [PlaceholderRegion(!1_0)] })
+                                            ┌─┘
+                                            ├─  1ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe INSIDE PROBE2: U1
+                                            ├─  1ms DEBUG rustc_next_trait_solver::solve::eval_ctxt::probe PROBE END: U0
+                                          ┌─┘
+                                          ├─  1ms DEBUG rustc_next_trait_solver::solve::trait_goals AFTER: U0
+                                        ┌─┘
+                                        └─┐rustc_next_trait_solver::solve::assembly::assemble_impl_candidates
+                                        ┌─┘
+                                        └─┐rustc_next_trait_solver::solve::assembly::assemble_object_bound_candidates
+                                        ┌─┘
+                                        └─┐rustc_next_trait_solver::solve::trait_goals::merge_trait_candidates candidate_preference_mode=Marker, candidates=[Candidate { source: BuiltinImpl(Misc), result: Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: [] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [OutlivesPredicate('^c_0, 'static)], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U1, var_kinds: [PlaceholderRegion(!1_0)] }, head_usages: CandidateHeadUsages { usages: None } }], failed_candidate_info=FailedCandidateInfo { param_env_head_usages: CandidateHeadUsages { usages: None } }
+                                          └─┐rustc_next_trait_solver::solve::try_merge_candidates candidates=[Candidate { source: BuiltinImpl(Misc), result: Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: [] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [OutlivesPredicate('^c_0, 'static)], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U1, var_kinds: [PlaceholderRegion(!1_0)] }, head_usages: CandidateHeadUsages { usages: None } }]
+                                            ├─  0ms TRACE rustc_next_trait_solver::solve return=Some((Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: [] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [OutlivesPredicate('^c_0, 'static)], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U1, var_kinds: [PlaceholderRegion(!1_0)] }, EqualResponse))
+                                          ┌─┘
+                                          ├─  0ms DEBUG rustc_next_trait_solver::solve::trait_goals return=Ok((Canonical { value: Response { certainty: Yes, var_values: CanonicalVarValues { var_values: [] }, external_constraints: ExternalConstraints(ExternalConstraintsData { region_constraints: [OutlivesPredicate('^c_0, 'static)], opaque_types: [], normalization_nested_goals: NestedNormalizationGoals([]) }) }, max_universe: U1, var_kinds: [PlaceholderRegion(!1_0)] }, Some(Misc)))
+                                        ┌─┘
+                                      ┌─┘
+                                    ┌─┘
+                                    └─┐rustc_next_trait_solver::canonical::unify_query_var_values param_env=ParamEnv { caller_bounds: [] }, original_values=[], var_values=CanonicalVarValues { var_values: [] }, span=no-location (#0)
+                                    ┌─┘
+                                  ┌─┘
+                                  ├─  1ms DEBUG rustc_next_trait_solver::solve::eval_ctxt SELF_UNIV: U0, DEL: U1, SKIP: false
+                                  ├─  1ms TRACE rustc_next_trait_solver::solve::eval_ctxt failed the leak check
