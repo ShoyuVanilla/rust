@@ -40,7 +40,7 @@ mod probe;
 /// This has effects on cycle handling handling and on how we compute
 /// query responses, see the variant descriptions for more info.
 #[derive(Debug, Copy, Clone)]
-enum CurrentGoalKind {
+pub(crate) enum CurrentGoalKind {
     Misc,
     /// We're proving an trait goal for a coinductive trait, either an auto trait or `Sized`.
     ///
@@ -93,7 +93,7 @@ where
     /// If some `InferCtxt` method is missing, please first think defensively about
     /// the method's compatibility with this solver, or if an existing one does
     /// the job already.
-    delegate: &'a D,
+    pub(crate) delegate: &'a D,
 
     /// The variable info for the `var_values`, only used to make an ambiguous response
     /// with no constraints.
@@ -101,7 +101,7 @@ where
 
     /// What kind of goal we're currently computing, see the enum definition
     /// for more info.
-    current_goal_kind: CurrentGoalKind,
+    pub(crate) current_goal_kind: CurrentGoalKind,
     pub(super) var_values: CanonicalVarValues<I>,
 
     /// The highest universe index nameable by the caller.
@@ -564,7 +564,7 @@ where
     pub(super) fn compute_goal(&mut self, goal: Goal<I, I::Predicate>) -> QueryResult<I> {
         let Goal { param_env, predicate } = goal;
         let kind = predicate.kind();
-        self.enter_forall(kind, |ecx, kind| match kind {
+        let res = self.enter_forall(kind, |ecx, kind| match kind {
             ty::PredicateKind::Clause(ty::ClauseKind::Trait(predicate)) => {
                 ecx.compute_trait_goal(Goal { param_env, predicate }).map(|(r, _via)| r)
             }
@@ -572,7 +572,11 @@ where
                 ecx.compute_host_effect_goal(Goal { param_env, predicate })
             }
             ty::PredicateKind::Clause(ty::ClauseKind::Projection(predicate)) => {
-                ecx.compute_projection_goal(Goal { param_env, predicate })
+                if std::env::var("OLD").is_ok() {
+                    ecx.compute_projection_goal(Goal { param_env, predicate })
+                } else {
+                    ecx.compute_projection_goal_new(Goal { param_env, predicate })
+                }
             }
             ty::PredicateKind::Clause(ty::ClauseKind::TypeOutlives(predicate)) => {
                 ecx.compute_type_outlives_goal(Goal { param_env, predicate })
@@ -613,7 +617,11 @@ where
             ty::PredicateKind::Ambiguous => {
                 ecx.evaluate_added_goals_and_make_canonical_response(Certainty::AMBIGUOUS)
             }
-        })
+        })?;
+
+        assert!(res.value.external_constraints.normalization_nested_goals.is_empty());
+
+        Ok(res)
     }
 
     // Recursively evaluates all the goals added to this `EvalCtxt` to completion, returning
@@ -1423,13 +1431,20 @@ where
 
     fn fold_ty(&mut self, ty: I::Ty) -> I::Ty {
         match ty.kind() {
-            ty::Alias(..) if !ty.has_escaping_bound_vars() => {
+            ty::Alias(_, alias) if !ty.has_escaping_bound_vars() => {
                 let infer_ty = self.ecx.next_ty_infer();
-                let normalizes_to = ty::PredicateKind::AliasRelate(
-                    ty.into(),
-                    infer_ty.into(),
-                    ty::AliasRelationDirection::Equate,
-                );
+                let normalizes_to = if std::env::var("OLD").is_ok() {
+                    ty::PredicateKind::AliasRelate(
+                        ty.into(),
+                        infer_ty.into(),
+                        ty::AliasRelationDirection::Equate,
+                    )
+                } else {
+                    ty::PredicateKind::Clause(ty::ClauseKind::Projection(ty::ProjectionPredicate {
+                        projection_term: alias.into(),
+                        term: infer_ty.into(),
+                    }))
+                };
                 self.ecx.add_goal(
                     self.normalization_goal_source,
                     Goal::new(self.cx(), self.param_env, normalizes_to),
@@ -1452,13 +1467,20 @@ where
 
     fn fold_const(&mut self, ct: I::Const) -> I::Const {
         match ct.kind() {
-            ty::ConstKind::Unevaluated(..) if !ct.has_escaping_bound_vars() => {
+            ty::ConstKind::Unevaluated(uc) if !ct.has_escaping_bound_vars() => {
                 let infer_ct = self.ecx.next_const_infer();
-                let normalizes_to = ty::PredicateKind::AliasRelate(
-                    ct.into(),
-                    infer_ct.into(),
-                    ty::AliasRelationDirection::Equate,
-                );
+                let normalizes_to = if std::env::var("OLD").is_ok() {
+                    ty::PredicateKind::AliasRelate(
+                        ct.into(),
+                        infer_ct.into(),
+                        ty::AliasRelationDirection::Equate,
+                    )
+                } else {
+                    ty::PredicateKind::Clause(ty::ClauseKind::Projection(ty::ProjectionPredicate {
+                        projection_term: uc.into(),
+                        term: infer_ct.into(),
+                    }))
+                };
                 self.ecx.add_goal(
                     self.normalization_goal_source,
                     Goal::new(self.cx(), self.param_env, normalizes_to),

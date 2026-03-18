@@ -44,12 +44,28 @@ impl<'tcx> At<'_, 'tcx> {
             // We simply emit an `alias-eq` goal here, since that will take care of
             // normalizing the LHS of the projection until it is a rigid projection
             // (or a not-yet-defined opaque in scope).
-            let obligation = Obligation::new(
-                self.infcx.tcx,
-                self.cause.clone(),
-                self.param_env,
-                ty::PredicateKind::AliasRelate(term, new_infer, ty::AliasRelationDirection::Equate),
-            );
+            let obligation = if std::env::var("OLD").is_ok() {
+                Obligation::new(
+                    self.infcx.tcx,
+                    self.cause.clone(),
+                    self.param_env,
+                    ty::PredicateKind::AliasRelate(
+                        term,
+                        new_infer,
+                        ty::AliasRelationDirection::Equate,
+                    ),
+                )
+            } else {
+                Obligation::new(
+                    self.infcx.tcx,
+                    self.cause.clone(),
+                    self.param_env,
+                    ty::ClauseKind::Projection(ty::ProjectionPredicate {
+                        projection_term: term.to_alias_term().unwrap(),
+                        term: new_infer,
+                    }),
+                )
+            };
 
             fulfill_cx.register_predicate_obligation(self.infcx, obligation);
             let errors = fulfill_cx.try_evaluate_obligations(self.infcx);

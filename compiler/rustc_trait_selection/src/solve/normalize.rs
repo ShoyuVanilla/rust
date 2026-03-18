@@ -116,16 +116,28 @@ where
         self.depth += 1;
 
         let infer_term = infcx.next_term_var_of_kind(alias_term, self.at.cause.span);
-        let obligation = Obligation::new(
-            tcx,
-            self.at.cause.clone(),
-            self.at.param_env,
-            ty::PredicateKind::AliasRelate(
-                alias_term.into(),
-                infer_term.into(),
-                ty::AliasRelationDirection::Equate,
-            ),
-        );
+        let obligation = if std::env::var("OLD").is_ok() {
+            Obligation::new(
+                tcx,
+                self.at.cause.clone(),
+                self.at.param_env,
+                ty::PredicateKind::AliasRelate(
+                    alias_term.into(),
+                    infer_term.into(),
+                    ty::AliasRelationDirection::Equate,
+                ),
+            )
+        } else {
+            Obligation::new(
+                tcx,
+                self.at.cause.clone(),
+                self.at.param_env,
+                ty::ClauseKind::Projection(ty::ProjectionPredicate {
+                    projection_term: alias_term.to_alias_term().unwrap(),
+                    term: infer_term,
+                }),
+            )
+        };
 
         self.fulfill_cx.register_predicate_obligation(infcx, obligation);
         self.evaluate_all_error_on_ambiguity_stall_coroutine_predicates()?;

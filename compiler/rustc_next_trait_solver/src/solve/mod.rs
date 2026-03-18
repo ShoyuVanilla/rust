@@ -18,6 +18,7 @@ mod eval_ctxt;
 pub mod inspect;
 mod normalizes_to;
 mod project_goals;
+mod project_goals_new;
 mod search_graph;
 mod trait_goals;
 
@@ -346,15 +347,26 @@ where
     ) -> Result<I::Term, NoSolution> {
         if let Some(_) = term.to_alias_term() {
             let normalized_term = self.next_term_infer_of_kind(term);
-            let alias_relate_goal = Goal::new(
-                self.cx(),
-                param_env,
-                ty::PredicateKind::AliasRelate(
-                    term,
-                    normalized_term,
-                    ty::AliasRelationDirection::Equate,
-                ),
-            );
+            let alias_relate_goal = if std::env::var("OLD").is_ok() {
+                Goal::new(
+                    self.cx(),
+                    param_env,
+                    ty::PredicateKind::AliasRelate(
+                        term,
+                        normalized_term,
+                        ty::AliasRelationDirection::Equate,
+                    ),
+                )
+            } else {
+                Goal::new(
+                    self.cx(),
+                    param_env,
+                    ty::ClauseKind::Projection(ty::ProjectionPredicate {
+                        projection_term: term.to_alias_term().unwrap(),
+                        term: normalized_term,
+                    }),
+                )
+            };
             // We normalize the self type to be able to relate it with
             // types from candidates.
             self.add_goal(GoalSource::TypeRelating, alias_relate_goal);

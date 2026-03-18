@@ -50,10 +50,25 @@ where
         // Structurally normalize the lhs.
         let lhs = if let Some(alias) = lhs.to_alias_term() {
             let term = self.next_term_infer_of_kind(lhs);
-            self.add_goal(
-                GoalSource::TypeRelating,
-                goal.with(cx, ty::NormalizesTo { alias, term }),
-            );
+
+            if std::env::var("OLD").is_ok() {
+                self.add_goal(
+                    GoalSource::TypeRelating,
+                    goal.with(cx, ty::NormalizesTo { alias, term }),
+                );
+            } else {
+                self.add_goal(
+                    GoalSource::TypeRelating,
+                    goal.with(
+                        cx,
+                        ty::ClauseKind::Projection(ty::ProjectionPredicate {
+                            projection_term: alias,
+                            term,
+                        }),
+                    ),
+                );
+            }
+
             term
         } else {
             lhs
@@ -62,10 +77,23 @@ where
         // Structurally normalize the rhs.
         let rhs = if let Some(alias) = rhs.to_alias_term() {
             let term = self.next_term_infer_of_kind(rhs);
-            self.add_goal(
-                GoalSource::TypeRelating,
-                goal.with(cx, ty::NormalizesTo { alias, term }),
-            );
+            if std::env::var("OLD").is_ok() {
+                self.add_goal(
+                    GoalSource::TypeRelating,
+                    goal.with(cx, ty::NormalizesTo { alias, term }),
+                );
+            } else {
+                self.add_goal(
+                    GoalSource::TypeRelating,
+                    goal.with(
+                        cx,
+                        ty::ClauseKind::Projection(ty::ProjectionPredicate {
+                            projection_term: alias,
+                            term,
+                        }),
+                    ),
+                );
+            }
             term
         } else {
             rhs
