@@ -29,8 +29,8 @@ fn main() {
     //~^ ERROR overflow evaluating whether `<() as Foo>::Item` is well-formed
     //~| ERROR overflow evaluating whether `&<() as Foo>::Item` is well-formed
     //~| ERROR overflow evaluating the requirement `String == <() as Foo>::Item`
-    //~| ERROR overflow evaluating the requirement `<() as Foo>::Item == _`
-    //~| ERROR overflow evaluating the requirement `<() as Foo>::Item == _`
-    //~| ERROR overflow evaluating the requirement `<() as Foo>::Item == _`
+    //~| ERROR overflow evaluating the requirement `<() as Foo>::Item normalizes-to _`
+    //~| ERROR overflow evaluating the requirement `<() as Foo>::Item normalizes-to _`
+    //~| ERROR overflow evaluating the requirement `<() as Foo>::Item normalizes-to _`
     println!("{x}");
 }

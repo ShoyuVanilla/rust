@@ -114,18 +114,14 @@ where
     /// We know `term` to always be a fully unconstrained inference variable, so
     /// `eq` should never fail here. However, in case `term` contains aliases, we
     /// emit nested `AliasRelate` goals to structurally normalize the alias.
-    pub fn instantiate_normalizes_to_term(
-        &mut self,
-        goal: Goal<I, NormalizesTo<I>>,
-        term: I::Term,
-    ) {
+    fn instantiate_normalizes_to_term(&mut self, goal: Goal<I, NormalizesTo<I>>, term: I::Term) {
         self.eq(goal.param_env, goal.predicate.term, term)
             .expect("expected goal term to be fully unconstrained");
     }
 
     /// Unlike `instantiate_normalizes_to_term` this instantiates the expected term
     /// with a rigid alias. Using this is pretty much always wrong.
-    pub fn structurally_instantiate_normalizes_to_term(
+    fn structurally_instantiate_normalizes_to_term(
         &mut self,
         goal: Goal<I, NormalizesTo<I>>,
         term: ty::AliasTerm<I>,
