@@ -2,7 +2,7 @@ use rustc_type_ir::{self as ty, Interner};
 use tracing::instrument;
 
 use crate::delegate::SolverDelegate;
-use crate::solve::{Certainty, EvalCtxt, Goal, QueryResult};
+use crate::solve::{Certainty, EvalCtxt, EvaluationResult, Goal, QueryResult};
 
 impl<D, I> EvalCtxt<'_, D>
 where
@@ -13,7 +13,7 @@ where
     pub(super) fn normalize_anon_const(
         &mut self,
         goal: Goal<I, ty::NormalizesTo<I>>,
-    ) -> QueryResult<I> {
+    ) -> EvaluationResult<I> {
         if let Some(normalized_const) = self.evaluate_const(
             goal.param_env,
             ty::UnevaluatedConst::new(

@@ -7,7 +7,7 @@
 use rustc_type_ir::{self as ty, Interner};
 
 use crate::delegate::SolverDelegate;
-use crate::solve::{Certainty, EvalCtxt, Goal, GoalSource, QueryResult};
+use crate::solve::{Certainty, EvalCtxt, EvaluationResult, Goal, GoalSource, QueryResult};
 
 impl<D, I> EvalCtxt<'_, D>
 where
@@ -17,7 +17,7 @@ where
     pub(super) fn normalize_free_alias(
         &mut self,
         goal: Goal<I, ty::NormalizesTo<I>>,
-    ) -> QueryResult<I> {
+    ) -> EvaluationResult<I> {
         let cx = self.cx();
         let free_alias = goal.predicate.alias;
 

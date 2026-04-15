@@ -11,6 +11,7 @@ use tracing::instrument;
 
 use super::assembly::{Candidate, structural_traits};
 use crate::delegate::SolverDelegate;
+use crate::solve::eval_ctxt::EvaluationResult;
 use crate::solve::{
     BuiltinImplSource, CandidateSource, Certainty, EvalCtxt, Goal, GoalSource, NoSolution,
     QueryResult, assembly,
@@ -60,8 +61,8 @@ where
         ecx: &mut EvalCtxt<'_, D>,
         goal: Goal<I, Self>,
         assumption: I::Clause,
-        then: impl FnOnce(&mut EvalCtxt<'_, D>) -> QueryResult<I>,
-    ) -> QueryResult<I> {
+        then: impl FnOnce(&mut EvalCtxt<'_, D>) -> EvaluationResult<I>,
+    ) -> EvaluationResult<I> {
         let host_clause = assumption.as_host_effect_clause().unwrap();
 
         let assumption_trait_pred = ecx.instantiate_binder_with_infer(host_clause);
@@ -124,7 +125,7 @@ where
         ecx: &mut EvalCtxt<'_, D>,
         goal: Goal<I, Self>,
         impl_def_id: I::ImplId,
-        then: impl FnOnce(&mut EvalCtxt<'_, D>, Certainty) -> QueryResult<I>,
+        then: impl FnOnce(&mut EvalCtxt<'_, D>, Certainty) -> EvaluationResult<I>,
     ) -> Result<Candidate<I>, NoSolution> {
         let cx = ecx.cx();
 
@@ -449,7 +450,7 @@ where
     pub(super) fn compute_host_effect_goal(
         &mut self,
         goal: Goal<I, ty::HostEffectPredicate<I>>,
-    ) -> QueryResult<I> {
+    ) -> EvaluationResult<I> {
         let (_, proven_via) = self.probe(|_| ProbeKind::ShadowedEnvProbing).enter(|ecx| {
             let trait_goal: Goal<I, ty::TraitPredicate<I>> =
                 goal.with(ecx.cx(), goal.predicate.trait_ref);

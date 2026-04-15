@@ -8,7 +8,7 @@ use tracing::instrument;
 use crate::canonical::instantiate_and_apply_query_response;
 use crate::delegate::SolverDelegate;
 use crate::solve::assembly::Candidate;
-use crate::solve::eval_ctxt::CurrentGoalKind;
+use crate::solve::eval_ctxt::{CurrentGoalKind, EvaluationResult};
 use crate::solve::{
     BuiltinImplSource, CandidateSource, Certainty, EvalCtxt, Goal, GoalSource, GoalStalledOn,
     NoSolution, QueryResult, inspect,
@@ -98,7 +98,7 @@ where
     D: SolverDelegate<Interner = I>,
     I: Interner,
 {
-    cx: ProbeCtxt<'me, 'a, D, I, F, QueryResult<I>>,
+    cx: ProbeCtxt<'me, 'a, D, I, F, EvaluationResult<I>>,
     source: CandidateSource<I>,
 }
 
@@ -106,12 +106,12 @@ impl<D, I, F> TraitProbeCtxt<'_, '_, D, I, F>
 where
     D: SolverDelegate<Interner = I>,
     I: Interner,
-    F: FnOnce(&QueryResult<I>) -> inspect::ProbeKind<I>,
+    F: FnOnce(&EvaluationResult<I>) -> inspect::ProbeKind<I>,
 {
     #[instrument(level = "debug", skip_all, fields(source = ?self.source))]
     pub(in crate::solve) fn enter(
         self,
-        f: impl FnOnce(&mut EvalCtxt<'_, D>) -> QueryResult<I>,
+        f: impl FnOnce(&mut EvalCtxt<'_, D>) -> EvaluationResult<I>,
     ) -> Result<Candidate<I>, NoSolution> {
         let (result, head_usages) = self.cx.enter_single_candidate(f);
         result.map(|result| Candidate { source: self.source, result, head_usages })
@@ -135,20 +135,24 @@ where
     pub(in crate::solve) fn probe_builtin_trait_candidate(
         &mut self,
         source: BuiltinImplSource,
-    ) -> TraitProbeCtxt<'_, 'a, D, I, impl FnOnce(&QueryResult<I>) -> inspect::ProbeKind<I>> {
+    ) -> TraitProbeCtxt<'_, 'a, D, I, impl FnOnce(&EvaluationResult<I>) -> inspect::ProbeKind<I>>
+    {
         self.probe_trait_candidate(CandidateSource::BuiltinImpl(source))
     }
 
     pub(in crate::solve) fn probe_trait_candidate(
         &mut self,
         source: CandidateSource<I>,
-    ) -> TraitProbeCtxt<'_, 'a, D, I, impl FnOnce(&QueryResult<I>) -> inspect::ProbeKind<I>> {
+    ) -> TraitProbeCtxt<'_, 'a, D, I, impl FnOnce(&EvaluationResult<I>) -> inspect::ProbeKind<I>>
+    {
         TraitProbeCtxt {
             cx: ProbeCtxt {
                 ecx: self,
-                probe_kind: move |result: &QueryResult<I>| inspect::ProbeKind::TraitCandidate {
-                    source,
-                    result: *result,
+                probe_kind: move |result: &EvaluationResult<I>| {
+                    inspect::ProbeKind::TraitCandidate {
+                        source,
+                        result: result.clone().map(|c| c.unchecked_map(|(resp, _)| resp)),
+                    }
                 },
                 _result: PhantomData,
             },
@@ -164,7 +168,7 @@ where
     pub(in crate::solve) fn probe_with_unconstrained_projection_term(
         &mut self,
         goal: Goal<I, ty::NormalizesTo<I>>,
-        f: impl FnOnce(&mut EvalCtxt<'_, D, I>, Goal<I, ty::NormalizesTo<I>>) -> QueryResult<I>,
+        f: impl FnOnce(&mut EvalCtxt<'_, D, I>, Goal<I, ty::NormalizesTo<I>>) -> EvaluationResult<I>,
     ) -> Result<(I::Term, Certainty), NoSolution> {
         let cx = self.cx();
         let unconstrained_term = self.next_term_infer_of_kind(goal.predicate.term);

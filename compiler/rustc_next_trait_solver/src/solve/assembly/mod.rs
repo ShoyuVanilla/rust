@@ -20,11 +20,13 @@ use tracing::{debug, instrument};
 use super::trait_goals::TraitGoalProvenVia;
 use super::{has_only_region_constraints, inspect};
 use crate::delegate::SolverDelegate;
+use crate::solve::eval_ctxt::{CanonicalResponseAndNestedGoals, EvaluationResult};
 use crate::solve::inspect::ProbeKind;
 use crate::solve::{
-    BuiltinImplSource, CandidateSource, CanonicalResponse, Certainty, EvalCtxt, Goal, GoalSource,
-    MaybeCause, NoSolution, OpaqueTypesJank, ParamEnvSource, QueryResult,
-    has_no_inference_or_external_constraints,
+    BuiltinImplSource, CandidateSource, Certainty, EvalCtxt, Goal, GoalSource, MaybeCause,
+    NoSolution, OpaqueTypesJank, ParamEnvSource, QueryResult,
+    has_no_inference_or_external_constraints, has_no_inference_or_external_constraints_new,
+    has_only_region_constraints_new,
 };
 
 /// A candidate is a possible way to prove a goal.
@@ -34,7 +36,7 @@ use crate::solve::{
 #[derive_where(Debug; I: Interner)]
 pub(super) struct Candidate<I: Interner> {
     pub(super) source: CandidateSource<I>,
-    pub(super) result: CanonicalResponse<I>,
+    pub(super) result: CanonicalResponseAndNestedGoals<I>,
     pub(super) head_usages: CandidateHeadUsages,
 }
 
@@ -147,9 +149,9 @@ where
         // by using a `Cell` here. We only ever write into it inside of `match_assumption`.
         let source = Cell::new(CandidateSource::ParamEnv(ParamEnvSource::Global));
         let (result, head_usages) = ecx
-            .probe(|result: &QueryResult<I>| inspect::ProbeKind::TraitCandidate {
+            .probe(|result: &EvaluationResult<I>| inspect::ProbeKind::TraitCandidate {
                 source: source.get(),
-                result: *result,
+                result: result.map(|c| c.unchecked_map(|(resp, _)| resp)),
             })
             .enter_single_candidate(|ecx| {
                 Self::match_assumption(ecx, goal, assumption, |ecx| {
@@ -176,7 +178,7 @@ where
         source: CandidateSource<I>,
         goal: Goal<I, Self>,
         assumption: I::Clause,
-        then: impl FnOnce(&mut EvalCtxt<'_, D>) -> QueryResult<I>,
+        then: impl FnOnce(&mut EvalCtxt<'_, D>) -> EvaluationResult<I>,
     ) -> Result<Candidate<I>, NoSolution> {
         Self::fast_reject_assumption(ecx, goal, assumption)?;
 
@@ -197,14 +199,14 @@ where
         ecx: &mut EvalCtxt<'_, D>,
         goal: Goal<I, Self>,
         assumption: I::Clause,
-        then: impl FnOnce(&mut EvalCtxt<'_, D>) -> QueryResult<I>,
-    ) -> QueryResult<I>;
+        then: impl FnOnce(&mut EvalCtxt<'_, D>) -> EvaluationResult<I>,
+    ) -> EvaluationResult<I>;
 
     fn consider_impl_candidate(
         ecx: &mut EvalCtxt<'_, D>,
         goal: Goal<I, Self>,
         impl_def_id: I::ImplId,
-        then: impl FnOnce(&mut EvalCtxt<'_, D>, Certainty) -> QueryResult<I>,
+        then: impl FnOnce(&mut EvalCtxt<'_, D>, Certainty) -> EvaluationResult<I>,
     ) -> Result<Candidate<I>, NoSolution>;
 
     /// If the predicate contained an error, we want to avoid emitting unnecessary trait
@@ -476,7 +478,7 @@ where
                             c.source,
                             CandidateSource::ParamEnv(ParamEnvSource::NonGlobal)
                                 | CandidateSource::AliasBound(_)
-                        ) && has_no_inference_or_external_constraints(c.result)
+                        ) && has_no_inference_or_external_constraints_new(c.result)
                     }),
                 };
                 if assemble_impls {
@@ -988,7 +990,7 @@ where
                 // assumes that specializing impls have to be always applicable, meaning that
                 // the only allowed region constraints may be constraints also present on the default impl.
                 if matches!(allow_inference_constraints, AllowInferenceConstraints::Yes)
-                    || has_only_region_constraints(c.result)
+                    || has_only_region_constraints_new(c.result)
                 {
                     if self.cx().impl_specializes(other_def_id, victim_def_id) {
                         candidates.remove(i);
@@ -1165,9 +1167,11 @@ where
         &mut self,
         proven_via: Option<TraitGoalProvenVia>,
         goal: Goal<I, G>,
-        inject_forced_ambiguity_candidate: impl FnOnce(&mut EvalCtxt<'_, D>) -> Option<QueryResult<I>>,
-        inject_normalize_to_rigid_candidate: impl FnOnce(&mut EvalCtxt<'_, D>) -> QueryResult<I>,
-    ) -> QueryResult<I> {
+        inject_forced_ambiguity_candidate: impl FnOnce(
+            &mut EvalCtxt<'_, D>,
+        ) -> Option<EvaluationResult<I>>,
+        inject_normalize_to_rigid_candidate: impl FnOnce(&mut EvalCtxt<'_, D>) -> EvaluationResult<I>,
+    ) -> EvaluationResult<I> {
         let Some(proven_via) = proven_via else {
             // We don't care about overflow. If proving the trait goal overflowed, then
             // it's enough to report an overflow error for that, we don't also have to

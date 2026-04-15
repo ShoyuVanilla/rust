@@ -6,7 +6,7 @@ use rustc_type_ir::solve::GoalSource;
 use rustc_type_ir::{self as ty, Interner, TypingMode, fold_regions};
 
 use crate::delegate::SolverDelegate;
-use crate::solve::{Certainty, EvalCtxt, Goal, QueryResult};
+use crate::solve::{Certainty, EvalCtxt, EvaluationResult, Goal, QueryResult};
 
 impl<D, I> EvalCtxt<'_, D>
 where
@@ -16,7 +16,7 @@ where
     pub(super) fn normalize_opaque_type(
         &mut self,
         goal: Goal<I, ty::NormalizesTo<I>>,
-    ) -> QueryResult<I> {
+    ) -> EvaluationResult<I> {
         let cx = self.cx();
         let opaque_ty = goal.predicate.alias;
         let expected = goal.predicate.term.as_type().expect("no such thing as an opaque const");

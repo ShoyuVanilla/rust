@@ -18,10 +18,12 @@ use crate::solve::assembly::structural_traits::{self, AsyncCallableRelevantTypes
 use crate::solve::assembly::{
     self, AllowInferenceConstraints, AssembleCandidatesFrom, Candidate, FailedCandidateInfo,
 };
+use crate::solve::eval_ctxt::EvaluationResult;
 use crate::solve::inspect::ProbeKind;
 use crate::solve::{
-    BuiltinImplSource, CandidateSource, Certainty, EvalCtxt, Goal, GoalSource, MaybeCause,
-    MergeCandidateInfo, NoSolution, ParamEnvSource, QueryResult, has_only_region_constraints,
+    BuiltinImplSource, CandidateSource, CanonicalResponseAndNestedGoals, Certainty, EvalCtxt, Goal,
+    GoalSource, MaybeCause, MergeCandidateInfo, NoSolution, ParamEnvSource, QueryResult,
+    has_only_region_constraints,
 };
 
 impl<D, I> assembly::GoalKind<D> for TraitPredicate<I>
@@ -57,7 +59,7 @@ where
         ecx: &mut EvalCtxt<'_, D>,
         goal: Goal<I, TraitPredicate<I>>,
         impl_def_id: I::ImplId,
-        then: impl FnOnce(&mut EvalCtxt<'_, D>, Certainty) -> QueryResult<I>,
+        then: impl FnOnce(&mut EvalCtxt<'_, D>, Certainty) -> EvaluationResult<I>,
     ) -> Result<Candidate<I>, NoSolution> {
         let cx = ecx.cx();
 
@@ -171,8 +173,8 @@ where
         ecx: &mut EvalCtxt<'_, D>,
         goal: Goal<I, Self>,
         assumption: I::Clause,
-        then: impl FnOnce(&mut EvalCtxt<'_, D>) -> QueryResult<I>,
-    ) -> QueryResult<I> {
+        then: impl FnOnce(&mut EvalCtxt<'_, D>) -> EvaluationResult<I>,
+    ) -> EvaluationResult<I> {
         let trait_clause = assumption.as_trait_clause().unwrap();
 
         // PERF(sized-hierarchy): Sizedness supertraits aren't elaborated to improve perf, so
@@ -1420,7 +1422,7 @@ where
         candidate_preference_mode: CandidatePreferenceMode,
         mut candidates: Vec<Candidate<I>>,
         failed_candidate_info: FailedCandidateInfo,
-    ) -> Result<(CanonicalResponse<I>, Option<TraitGoalProvenVia>), NoSolution> {
+    ) -> Result<(CanonicalResponseAndNestedGoals<I>, Option<TraitGoalProvenVia>), NoSolution> {
         if self.typing_mode().is_coherence() {
             return if let Some((response, _)) = self.try_merge_candidates(&candidates) {
                 Ok((response, Some(TraitGoalProvenVia::Misc)))
@@ -1545,7 +1547,7 @@ where
     pub(super) fn compute_trait_goal(
         &mut self,
         goal: Goal<I, TraitPredicate<I>>,
-    ) -> Result<(CanonicalResponse<I>, Option<TraitGoalProvenVia>), NoSolution> {
+    ) -> Result<(CanonicalResponseAndNestedGoals<I>, Option<TraitGoalProvenVia>), NoSolution> {
         let (candidates, failed_candidate_info) =
             self.assemble_and_evaluate_candidates(goal, AssembleCandidatesFrom::All);
         let candidate_preference_mode =

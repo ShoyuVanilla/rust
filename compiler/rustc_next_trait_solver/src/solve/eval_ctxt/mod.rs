@@ -246,6 +246,12 @@ where
     }
 }
 
+pub(in crate::solve) type CanonicalResponseAndNestedGoals<I: Interner> =
+    ty::Canonical<I, (Response<I>, Vec<(GoalSource, Goal<I, I::Predicate>)>)>;
+
+pub(in crate::solve) type EvaluationResult<I: Interner> =
+    Result<CanonicalResponseAndNestedGoals<I>, NoSolution>;
+
 impl<'a, D, I> EvalCtxt<'a, D>
 where
     D: SolverDelegate<Interner = I>,
@@ -607,9 +613,10 @@ where
             }
         })?;
 
-        assert!(resp.value.external_constraints.normalization_nested_goals.is_empty());
-
-        Ok(resp)
+        Ok(resp.unchecked_map(|(resp, nested_goals)| {
+            assert!(nested_goals.is_empty());
+            resp
+        }))
     }
 
     // Recursively evaluates all the goals added to this `EvalCtxt` to completion, returning
@@ -1018,7 +1025,7 @@ where
     pub(in crate::solve) fn evaluate_added_goals_and_make_canonical_response(
         &mut self,
         shallow_certainty: Certainty,
-    ) -> QueryResult<I> {
+    ) -> EvaluationResult<I> {
         self.inspect.make_canonical_response(shallow_certainty);
 
         let goals_certainty = self.try_evaluate_added_goals()?;
@@ -1038,10 +1045,10 @@ where
 
         let (certainty, normalization_nested_goals) =
             match (self.current_goal_kind, shallow_certainty) {
-                // When normalizing, we've replaced the expected term with an unconstrained
-                // inference variable. This means that we dropped information which could
-                // have been important. We handle this by instead returning the nested goals
-                // to the caller, where they are then handled. We only do so if we do not
+                // When probing `NormalizesTo` goals' candidates, we've replaced the expected term
+                // with an unconstrained inference variable. This means that we dropped information
+                // which could have been important. We handle this by instead returning the nested
+                // goals to the caller, where they are then handled. We only do so if we do not
                 // need to recompute the `NormalizesTo` goal afterwards to avoid repeatedly
                 // uplifting its nested goals. This is the case if the `shallow_certainty` is
                 // `Certainty::Yes`.
@@ -1084,6 +1091,8 @@ where
             return Ok(self.make_ambiguous_response_no_constraints(cause, opaque_types_jank));
         }
 
+        let nested_goals = normalization_nested_goals.0.clone();
+
         let external_constraints =
             self.compute_external_query_constraints(certainty, normalization_nested_goals);
         let (var_values, mut external_constraints) =
@@ -1105,7 +1114,7 @@ where
             },
         );
 
-        Ok(canonical)
+        Ok(canonical.unchecked_map(|resp| (resp, nested_goals)))
     }
 
     /// Constructs a totally unconstrained, ambiguous response to a goal.
@@ -1116,13 +1125,14 @@ where
         &self,
         cause: MaybeCause,
         opaque_types_jank: OpaqueTypesJank,
-    ) -> CanonicalResponse<I> {
+    ) -> CanonicalResponseAndNestedGoals<I> {
         response_no_constraints_raw(
             self.cx(),
             self.max_input_universe,
             self.var_kinds,
             Certainty::Maybe { cause, opaque_types_jank },
         )
+        .unchecked_map(|resp| (resp, Default::default()))
     }
 
     /// Computes the region constraints and *new* opaque types registered when

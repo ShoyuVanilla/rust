@@ -33,6 +33,7 @@ pub use self::eval_ctxt::{
 };
 use crate::delegate::SolverDelegate;
 use crate::solve::assembly::Candidate;
+use crate::solve::eval_ctxt::{CanonicalResponseAndNestedGoals, EvaluationResult};
 
 /// How many fixpoint iterations we should attempt inside of the solver before bailing
 /// with overflow.
@@ -69,6 +70,20 @@ fn has_no_inference_or_external_constraints<I: Interner>(
         && normalization_nested_goals.is_empty()
 }
 
+fn has_no_inference_or_external_constraints_new<I: Interner>(
+    response: CanonicalResponseAndNestedGoals<I>,
+) -> bool {
+    let ExternalConstraintsData {
+        ref region_constraints,
+        ref opaque_types,
+        ref normalization_nested_goals,
+    } = *response.value.0.external_constraints;
+    response.value.0.var_values.is_identity()
+        && region_constraints.is_empty()
+        && opaque_types.is_empty()
+        && response.value.1.is_empty()
+}
+
 fn has_only_region_constraints<I: Interner>(response: ty::Canonical<I, Response<I>>) -> bool {
     let ExternalConstraintsData {
         region_constraints: _,
@@ -80,6 +95,19 @@ fn has_only_region_constraints<I: Interner>(response: ty::Canonical<I, Response<
         && normalization_nested_goals.is_empty()
 }
 
+fn has_only_region_constraints_new<I: Interner>(
+    response: CanonicalResponseAndNestedGoals<I>,
+) -> bool {
+    let ExternalConstraintsData {
+        region_constraints: _,
+        ref opaque_types,
+        ref normalization_nested_goals,
+    } = *response.value.0.external_constraints;
+    response.value.0.var_values.is_identity_modulo_regions()
+        && opaque_types.is_empty()
+        && response.value.1.is_empty()
+}
+
 impl<'a, D, I> EvalCtxt<'a, D>
 where
     D: SolverDelegate<Interner = I>,
@@ -89,7 +117,7 @@ where
     fn compute_type_outlives_goal(
         &mut self,
         goal: Goal<I, ty::OutlivesPredicate<I, I::Ty>>,
-    ) -> QueryResult<I> {
+    ) -> EvaluationResult<I> {
         let ty::OutlivesPredicate(ty, lt) = goal.predicate;
         self.register_ty_outlives(ty, lt);
         self.evaluate_added_goals_and_make_canonical_response(Certainty::Yes)
@@ -99,14 +127,17 @@ where
     fn compute_region_outlives_goal(
         &mut self,
         goal: Goal<I, ty::OutlivesPredicate<I, I::Region>>,
-    ) -> QueryResult<I> {
+    ) -> EvaluationResult<I> {
         let ty::OutlivesPredicate(a, b) = goal.predicate;
         self.register_region_outlives(a, b);
         self.evaluate_added_goals_and_make_canonical_response(Certainty::Yes)
     }
 
     #[instrument(level = "trace", skip(self))]
-    fn compute_coerce_goal(&mut self, goal: Goal<I, ty::CoercePredicate<I>>) -> QueryResult<I> {
+    fn compute_coerce_goal(
+        &mut self,
+        goal: Goal<I, ty::CoercePredicate<I>>,
+    ) -> EvaluationResult<I> {
         self.compute_subtype_goal(Goal {
             param_env: goal.param_env,
             predicate: ty::SubtypePredicate {
@@ -118,7 +149,10 @@ where
     }
 
     #[instrument(level = "trace", skip(self))]
-    fn compute_subtype_goal(&mut self, goal: Goal<I, ty::SubtypePredicate<I>>) -> QueryResult<I> {
+    fn compute_subtype_goal(
+        &mut self,
+        goal: Goal<I, ty::SubtypePredicate<I>>,
+    ) -> EvaluationResult<I> {
         match (goal.predicate.a.kind(), goal.predicate.b.kind()) {
             (ty::Infer(ty::TyVar(a_vid)), ty::Infer(ty::TyVar(b_vid))) => {
                 self.sub_unify_ty_vids_raw(a_vid, b_vid);
@@ -131,7 +165,7 @@ where
         }
     }
 
-    fn compute_dyn_compatible_goal(&mut self, trait_def_id: I::TraitId) -> QueryResult<I> {
+    fn compute_dyn_compatible_goal(&mut self, trait_def_id: I::TraitId) -> EvaluationResult<I> {
         if self.cx().trait_is_dyn_compatible(trait_def_id) {
             self.evaluate_added_goals_and_make_canonical_response(Certainty::Yes)
         } else {
@@ -140,7 +174,7 @@ where
     }
 
     #[instrument(level = "trace", skip(self))]
-    fn compute_well_formed_goal(&mut self, goal: Goal<I, I::Term>) -> QueryResult<I> {
+    fn compute_well_formed_goal(&mut self, goal: Goal<I, I::Term>) -> EvaluationResult<I> {
         match self.well_formed_goals(goal.param_env, goal.predicate) {
             Some(goals) => {
                 self.add_goals(GoalSource::Misc, goals);
@@ -154,7 +188,7 @@ where
         &mut self,
         param_env: <I as Interner>::ParamEnv,
         symbol: <I as Interner>::Symbol,
-    ) -> QueryResult<I> {
+    ) -> EvaluationResult<I> {
         if self.may_use_unstable_feature(param_env, symbol) {
             self.evaluate_added_goals_and_make_canonical_response(Certainty::Yes)
         } else {
@@ -169,7 +203,7 @@ where
     fn compute_const_evaluatable_goal(
         &mut self,
         Goal { param_env, predicate: ct }: Goal<I, I::Const>,
-    ) -> QueryResult<I> {
+    ) -> EvaluationResult<I> {
         match ct.kind() {
             ty::ConstKind::Unevaluated(uv) => {
                 // We never return `NoSolution` here as `evaluate_const` emits an
@@ -206,7 +240,7 @@ where
     fn compute_const_arg_has_type_goal(
         &mut self,
         goal: Goal<I, (I::Const, I::Ty)>,
-    ) -> QueryResult<I> {
+    ) -> EvaluationResult<I> {
         let (ct, ty) = goal.predicate;
         let ct = self.structurally_normalize_const(goal.param_env, ct)?;
 
@@ -256,7 +290,7 @@ where
     fn try_merge_candidates(
         &mut self,
         candidates: &[Candidate<I>],
-    ) -> Option<(CanonicalResponse<I>, MergeCandidateInfo)> {
+    ) -> Option<(CanonicalResponseAndNestedGoals<I>, MergeCandidateInfo)> {
         if candidates.is_empty() {
             return None;
         }
@@ -269,7 +303,7 @@ where
             return Some((c.result, MergeCandidateInfo::AlwaysApplicable(i)));
         }
 
-        let one: CanonicalResponse<I> = candidates[0].result;
+        let one: CanonicalResponseAndNestedGoals<I> = candidates[0].result;
         if candidates[1..].iter().all(|candidate| candidate.result == one) {
             return Some((one, MergeCandidateInfo::EqualResponse));
         }
@@ -277,7 +311,10 @@ where
         None
     }
 
-    fn bail_with_ambiguity(&mut self, candidates: &[Candidate<I>]) -> CanonicalResponse<I> {
+    fn bail_with_ambiguity(
+        &mut self,
+        candidates: &[Candidate<I>],
+    ) -> CanonicalResponseAndNestedGoals<I> {
         debug_assert!(candidates.len() > 1);
         let (cause, opaque_types_jank) = candidates.iter().fold(
             (MaybeCause::Ambiguity, OpaqueTypesJank::AllGood),
@@ -298,7 +335,7 @@ where
 
     /// If we fail to merge responses we flounder and return overflow or ambiguity.
     #[instrument(level = "trace", skip(self), ret)]
-    fn flounder(&mut self, candidates: &[Candidate<I>]) -> QueryResult<I> {
+    fn flounder(&mut self, candidates: &[Candidate<I>]) -> EvaluationResult<I> {
         if candidates.is_empty() {
             return Err(NoSolution);
         } else {

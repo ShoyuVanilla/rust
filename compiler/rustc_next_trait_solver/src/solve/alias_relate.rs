@@ -21,7 +21,7 @@ use rustc_type_ir::{self as ty, Interner};
 use tracing::{instrument, trace};
 
 use crate::delegate::SolverDelegate;
-use crate::solve::{Certainty, EvalCtxt, Goal, QueryResult};
+use crate::solve::{Certainty, EvalCtxt, EvaluationResult, Goal, QueryResult};
 
 impl<D, I> EvalCtxt<'_, D>
 where
@@ -32,7 +32,7 @@ where
     pub(super) fn compute_alias_relate_goal(
         &mut self,
         goal: Goal<I, (I::Term, I::Term, ty::AliasRelationDirection)>,
-    ) -> QueryResult<I> {
+    ) -> EvaluationResult<I> {
         let cx = self.cx();
         let Goal { param_env, predicate: (lhs, rhs, direction) } = goal;
 

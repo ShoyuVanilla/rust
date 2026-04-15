@@ -13,6 +13,7 @@ use tracing::instrument;
 use crate::delegate::SolverDelegate;
 use crate::solve::assembly::structural_traits::{self, AsyncCallableRelevantTypes};
 use crate::solve::assembly::{self, Candidate};
+use crate::solve::eval_ctxt::EvaluationResult;
 use crate::solve::inspect::ProbeKind;
 use crate::solve::{
     BuiltinImplSource, CandidateSource, Certainty, EvalCtxt, Goal, GoalSource, MaybeCause,
@@ -28,7 +29,7 @@ where
     pub(super) fn compute_normalizes_to_goal(
         &mut self,
         goal: Goal<I, NormalizesTo<I>>,
-    ) -> QueryResult<I> {
+    ) -> EvaluationResult<I> {
         let cx = self.cx();
         match goal.predicate.alias.kind(cx) {
             ty::AliasTermKind::ProjectionTy | ty::AliasTermKind::ProjectionConst => {
@@ -75,17 +76,19 @@ where
                                 None
                             },
                             |ecx| {
-                                ecx.probe(|&result| ProbeKind::RigidAlias { result }).enter(
-                                    |this| {
-                                        this.structurally_instantiate_normalizes_to_term(
-                                            goal,
-                                            goal.predicate.alias,
-                                        );
-                                        this.evaluate_added_goals_and_make_canonical_response(
-                                            Certainty::Yes,
-                                        )
-                                    },
-                                )
+                                ecx.probe(|&result: &EvaluationResult<I>| {
+                                    let result = result.map(|c| c.unchecked_map(|(resp, _)| resp));
+                                    ProbeKind::RigidAlias { result }
+                                })
+                                .enter(|this| {
+                                    this.structurally_instantiate_normalizes_to_term(
+                                        goal,
+                                        goal.predicate.alias,
+                                    );
+                                    this.evaluate_added_goals_and_make_canonical_response(
+                                        Certainty::Yes,
+                                    )
+                                })
                             },
                         )
                     })?;
@@ -174,8 +177,8 @@ where
         ecx: &mut EvalCtxt<'_, D>,
         goal: Goal<I, Self>,
         assumption: I::Clause,
-        then: impl FnOnce(&mut EvalCtxt<'_, D>) -> QueryResult<I>,
-    ) -> QueryResult<I> {
+        then: impl FnOnce(&mut EvalCtxt<'_, D>) -> EvaluationResult<I>,
+    ) -> EvaluationResult<I> {
         let cx = ecx.cx();
         let projection_pred = assumption.as_projection_clause().unwrap();
         let assumption_projection_pred = ecx.instantiate_binder_with_infer(projection_pred);
@@ -221,7 +224,7 @@ where
         ecx: &mut EvalCtxt<'_, D>,
         goal: Goal<I, NormalizesTo<I>>,
         impl_def_id: I::ImplId,
-        then: impl FnOnce(&mut EvalCtxt<'_, D>, Certainty) -> QueryResult<I>,
+        then: impl FnOnce(&mut EvalCtxt<'_, D>, Certainty) -> EvaluationResult<I>,
     ) -> Result<Candidate<I>, NoSolution> {
         let cx = ecx.cx();
 
