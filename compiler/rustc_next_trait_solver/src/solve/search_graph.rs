@@ -41,7 +41,7 @@ where
         inspect.is_noop()
     }
 
-    const DIVIDE_AVAILABLE_DEPTH_ON_OVERFLOW: usize = 4;
+    const DIVIDE_AVAILABLE_DEPTH_ON_OVERFLOW: usize = 2;
 
     fn initial_provisional_result(
         cx: I,
