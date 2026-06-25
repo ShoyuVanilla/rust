@@ -15,7 +15,7 @@ use rustc_middle::ty::{
     TypeFoldable, TypeSuperFoldable, TypeVisitableExt, Unnormalized, fold_regions,
 };
 use rustc_mir_dataflow::points::DenseLocationMap;
-use rustc_span::Span;
+use rustc_span::{DUMMY_SP, Span};
 use rustc_trait_selection::opaque_types::{
     NonDefiningUseReason, opaque_type_has_defining_use_args,
 };
@@ -667,15 +667,19 @@ pub(crate) fn detect_opaque_types_added_while_handling_opaque_types<'tcx>(
     infcx: &InferCtxt<'tcx>,
     opaque_types_storage_num_entries: OpaqueTypeStorageEntries,
 ) {
-    for (key, hidden_type) in infcx
-        .inner
-        .borrow_mut()
-        .opaque_types()
-        .opaque_types_added_since(opaque_types_storage_num_entries)
-    {
+    let mut inner = infcx.inner.borrow_mut();
+    let opaques = inner.opaque_types();
+    let (opaque_types, hidden_types_of_opaques) =
+        opaques.opaque_types_added_since(opaque_types_storage_num_entries);
+    for (key, hidden_type) in opaque_types {
         let opaque_type_string = infcx.tcx.def_path_str(key.def_id);
         let msg = format!("unexpected cyclic definition of `{opaque_type_string}`");
         infcx.dcx().span_delayed_bug(hidden_type.span, msg);
+    }
+    for (hidden_ty, _) in hidden_types_of_opaques {
+        let msg =
+            format!("unexpected cycle while handling hidden type of opaque: `{:?}`", *hidden_ty);
+        infcx.dcx().span_delayed_bug(DUMMY_SP, msg);
     }
 
     let _ = infcx.take_opaque_types();

@@ -1094,6 +1094,8 @@ impl<'tcx> InferCtxt<'tcx> {
 
     #[instrument(level = "debug", skip(self), ret)]
     pub fn take_opaque_types(&self) -> Vec<(OpaqueTypeKey<'tcx>, ProvisionalHiddenType<'tcx>)> {
+        // TODO: Clear hidden_types_of_opaques
+
         self.inner.borrow_mut().opaque_type_storage.take_opaque_types().collect()
     }
 

@@ -377,6 +377,7 @@ impl<'tcx> rustc_type_ir::InferCtxtLike for InferCtxt<'tcx> {
             .borrow_mut()
             .opaque_types()
             .opaque_types_added_since(prev_entries)
+            .0
             .map(|(k, h)| (k, h.ty))
             .collect()
     }

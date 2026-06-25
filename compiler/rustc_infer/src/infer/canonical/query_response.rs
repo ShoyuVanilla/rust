@@ -94,15 +94,16 @@ impl<'tcx> InferCtxt<'tcx> {
         //
         // This doesn't handle the more general case for non-opaques as
         // ambiguous `Projection` obligations have same the issue.
-        let opaque_types = if self.next_trait_solver() {
-            self.inner
-                .borrow_mut()
-                .opaque_type_storage
-                .opaque_types_added_since(prev_entries)
-                .map(|(k, v)| (k, v.ty))
-                .collect()
+        let (opaque_types, hidden_types_of_opaques) = if self.next_trait_solver() {
+            let inner = self.inner.borrow_mut();
+            let (opaque_types, hidden_types_of_opaque) =
+                inner.opaque_type_storage.opaque_types_added_since(prev_entries);
+            (
+                opaque_types.map(|(k, v)| (k, v.ty)).collect(),
+                hidden_types_of_opaque.cloned().collect(),
+            )
         } else {
-            vec![]
+            (vec![], vec![])
         };
 
         self.canonicalize_response(QueryResponse {

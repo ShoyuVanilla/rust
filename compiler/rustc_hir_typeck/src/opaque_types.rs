@@ -5,6 +5,7 @@ use rustc_middle::ty::{
     self, DefiningScopeKind, DefinitionSiteHiddenType, OpaqueTypeKey, ProvisionalHiddenType,
     TypeVisitableExt, Unnormalized,
 };
+use rustc_span::DUMMY_SP;
 use rustc_trait_selection::error_reporting::infer::need_type_info::TypeAnnotationNeeded;
 use rustc_trait_selection::opaque_types::{
     NonDefiningUseReason, opaque_type_has_defining_use_args, report_item_does_not_constrain_error,
@@ -266,12 +267,20 @@ impl<'tcx> FnCtxt<'_, 'tcx> {
     /// then, either allowing compilation to succeed or causing an ambiguity error.
     pub(super) fn detect_opaque_types_added_during_writeback(&self) {
         let num_entries = self.checked_opaque_types_storage_entries.take().unwrap();
-        for (key, hidden_type) in
-            self.inner.borrow_mut().opaque_types().opaque_types_added_since(num_entries)
-        {
+        let mut inner = self.infcx.inner.borrow_mut();
+        let opaques = inner.opaque_types();
+        let (opaque_types, hidden_types_of_opaques) = opaques.opaque_types_added_since(num_entries);
+        for (key, hidden_type) in opaque_types {
             let opaque_type_string = self.tcx.def_path_str(key.def_id);
             let msg = format!("unexpected cyclic definition of `{opaque_type_string}`");
             self.dcx().span_delayed_bug(hidden_type.span, msg);
+        }
+        for (hidden_ty, _) in hidden_types_of_opaques {
+            let msg = format!(
+                "unexpected cycle while handling hidden type of opaque: `{:?}`",
+                *hidden_ty
+            );
+            self.dcx().span_delayed_bug(DUMMY_SP, msg);
         }
         let _ = self.take_opaque_types();
     }
