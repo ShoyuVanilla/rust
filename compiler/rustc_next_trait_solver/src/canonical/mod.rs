@@ -116,8 +116,12 @@ where
 
     unify_query_var_values(delegate, param_env, &original_values, var_values, span);
 
-    let ExternalConstraintsData { region_constraints, opaque_types, normalization_nested_goals } =
-        &*external_constraints;
+    let ExternalConstraintsData {
+        region_constraints,
+        opaque_types,
+        hidden_types_of_opaques,
+        normalization_nested_goals,
+    } = &*external_constraints;
 
     match region_constraints {
         ExternalRegionConstraints::Old(r) => register_region_constraints(

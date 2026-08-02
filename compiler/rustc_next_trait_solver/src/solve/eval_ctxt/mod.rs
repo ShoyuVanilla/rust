@@ -1661,11 +1661,18 @@ where
             .delegate
             .clone_opaque_types_added_since(self.initial_opaque_types_storage_num_entries);
 
+        let hidden_types_of_opaques = todo!();
+
         if self.typing_mode().is_erased_not_coherence() {
-            assert!(opaque_types.is_empty());
+            assert!(opaque_types.is_empty() && hidden_types_of_opaques.is_empty());
         }
 
-        ExternalConstraintsData { region_constraints, opaque_types, normalization_nested_goals }
+        ExternalConstraintsData {
+            region_constraints,
+            opaque_types,
+            hidden_types_of_opaques,
+            normalization_nested_goals,
+        }
     }
 
     pub(super) fn normalize<T: TypeFoldable<I>>(
