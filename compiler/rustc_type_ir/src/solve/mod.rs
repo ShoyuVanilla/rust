@@ -536,6 +536,10 @@ pub enum ParamEnvSource {
 
 #[derive(Clone, Copy, Hash, PartialEq, Eq, Debug)]
 #[derive(TypeVisitable_Generic, GenericTypeVisitable, TypeFoldable_Generic)]
+#[cfg_attr(
+    feature = "nightly",
+    derive(Encodable_NoContext, Decodable_NoContext, StableHash_NoContext)
+)]
 pub enum AliasBoundKind {
     /// Alias bound from the self type of a projection
     SelfBounds,
