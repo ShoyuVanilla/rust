@@ -810,8 +810,12 @@ where
 
         drop(tracing_span);
 
-        let has_changed =
-            if has_only_region_constraints(response) { HasChanged::Yes } else { HasChanged::No };
+        let has_changed = if std::env::var("FOO").is_ok() {
+            has_only_region_constraints(response)
+        } else {
+            super::has_only_region_constraints2(response)
+        };
+        let has_changed = if has_changed { HasChanged::Yes } else { HasChanged::No };
 
         let (normalization_nested_goals, certainty) = instantiate_and_apply_query_response(
             self.delegate,
