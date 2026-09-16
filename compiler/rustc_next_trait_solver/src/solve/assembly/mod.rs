@@ -1173,7 +1173,7 @@ where
         for (hidden_ty, bounds) in hidden_types_of_opaques {
             debug!("self ty is sub unified with {hidden_ty:?}");
 
-            // We look at all item-bounds of the hidden types, replacing the
+            // We look at all item-bounds of the hidden types,
             // instantiating the self type of the bound with the current self
             // type before considering them as a candidate. Imagine we've got
             // `?x: Trait<?y>` and `?x` has been sub-unified with the hidden
