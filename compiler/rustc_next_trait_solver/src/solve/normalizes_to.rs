@@ -180,6 +180,10 @@ where
         self.trait_def_id(cx)
     }
 
+    fn as_normalizes_to(self) -> Option<NormalizesTo<I>> {
+        Some(self)
+    }
+
     fn fast_reject_assumption(
         ecx: &mut EvalCtxt<'_, D>,
         goal: Goal<I, Self>,
@@ -1088,7 +1092,7 @@ where
         unreachable!("try_as_dyn helper trait doesn't have assoc types")
     }
 
-    fn consider_hidden_types_of_opaques_bound_candidate(
+    fn consider_pseudo_rigid_due_to_opaques_candidate(
         ecx: &mut EvalCtxt<'_, D>,
         goal: Goal<I, Self>,
         bound: ty::OpaqueHiddenTyBound<I>,
@@ -1107,7 +1111,7 @@ where
                 // `ty::OpaqueHiddenTyBound` of an opaque (or another assoc ty on it), otherwise
                 // it might make blaket impl candidate inapplicable.
                 // See `tests/ui/impl-trait/non-defining-uses/use-blanket-impl.rs` for such case.
-                if ecx.typing_mode().should_add_hidden_types_of_opaques()
+                if ecx.typing_mode().should_register_pseudo_rigid_bounds()
                     && let ty::AliasTermKind::ProjectionTy { def_id } = alias.kind
                 {
                     ecx.add_hidden_type_of_opaque_in_storage(

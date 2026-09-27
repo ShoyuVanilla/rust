@@ -109,15 +109,7 @@ where
                         | TypingMode::Reflection
                         | TypingMode::Codegen => unreachable!(),
                     }
-                }
 
-                self.add_item_bounds_for_hidden_type(
-                    def_id.into(),
-                    normalized_args,
-                    goal.param_env,
-                    expected,
-                )?;
-                if self.typing_mode().should_add_hidden_types_of_opaques() {
                     self.add_hidden_type_of_opaque_in_storage(
                         expected,
                         ty::OpaqueHiddenTyBound::iter_item_self_bounds_for_hidden_ty(
@@ -130,6 +122,13 @@ where
                         ),
                     );
                 }
+
+                self.add_item_bounds_for_hidden_type(
+                    def_id.into(),
+                    normalized_args,
+                    goal.param_env,
+                    expected,
+                )?;
                 self.evaluate_added_goals_and_make_canonical_response(Certainty::Yes)
                     .map_err(Into::into)
             }

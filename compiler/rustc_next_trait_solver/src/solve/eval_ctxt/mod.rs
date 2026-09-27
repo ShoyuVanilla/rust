@@ -781,10 +781,11 @@ where
         let tracing_span = tracing::span!(
             Level::DEBUG,
             "evaluate_goal_raw in typing mode",
-            "{:?} opaques={:?}, opaque_hidden_ty_bounds={:?}",
+            "{:?} opaques={:?}, opaque_hidden_ty_bounds={:?}, goal={:?}",
             typing_mode,
             opaque_types,
             opaque_hidden_ty_bounds,
+            goal,
         )
         .entered();
 

@@ -279,7 +279,7 @@ impl<I: Interner, S: TypingModeErasedStatus> TypingMode<I, S> {
     /// item self bounds for `hidden_types_of_opaques` for that `TypingMode` only.
     ///
     /// See also the documentation on [`TypingMode`] about exhaustive matching.
-    pub fn should_add_hidden_types_of_opaques(&self) -> bool {
+    pub fn should_register_pseudo_rigid_bounds(&self) -> bool {
         match self {
             TypingMode::Typeck { .. } => true,
             TypingMode::PostTypeckUntilBorrowck { .. }

@@ -1136,7 +1136,10 @@ impl<'tcx> InferCtxt<'tcx> {
         self.inner.borrow_mut().opaque_type_storage.iter_opaque_types().collect()
     }
 
-    pub fn has_hidden_types_of_opaques_modulo_sub_unification(&self, ty_vid: TyVid) -> bool {
+    /// In the next solver, we normalize alias types by replacing them with infer vars and
+    /// registering/evaluating projection goals
+    /// They often but when we are in the defining scope of an opaque type and we haven't fully
+    pub fn is_pseudo_rigid_due_to_opaques_modulo_sub_unification(&self, ty_vid: TyVid) -> bool {
         if !self.next_trait_solver() {
             return false;
         }

@@ -14,17 +14,17 @@ use crate::infer::snapshot::undo_log::{InferCtxtUndoLogs, UndoLog};
 pub struct OpaqueTypeStorage<'tcx> {
     opaque_types: FxIndexMap<OpaqueTypeKey<'tcx>, ProvisionalHiddenType<'tcx>>,
     duplicate_entries: Vec<(OpaqueTypeKey<'tcx>, ProvisionalHiddenType<'tcx>)>,
-    // Note:
-    //   OpaqueHiddenTy ::= OpaqueTy
-    //                    | Projection<OpaqueHiddenTy>
-    //
-    // When we normalize a `OpaqueHiddenTy`, we store its self-bounds here, to support non-defining
-    // usages of sucu hidden types. The key is an expected term for the normalization and the value
-    // is those self-bounds.
+    /// Note:
+    ///   OpaqueHiddenTy ::= OpaqueTy
+    ///                    | Projection<OpaqueHiddenTy>
+    ///
+    /// When we normalize a `OpaqueHiddenTy`, we store its self-bounds here, to support non-defining
+    /// usages of sucu hidden types. The key is an expected term for the normalization and the value
+    /// is those self-bounds.
     hidden_types_of_opaques: FxIndexMap<Ty<'tcx>, FxIndexSet<ty::OpaqueHiddenTyBound<'tcx>>>,
-    // The flattened version of the above `hidden_types_of_opaques`. This is a pure duplication
-    // but we need this to track things linearly, so that we can track the number of those bounds
-    // in `OpaqueTypeStorageEntries` without a map and can lookup `opaque_hidden_ty_bounds` in O(1).
+    /// The flattened version of the above `hidden_types_of_opaques`. This is a pure duplication
+    /// but we need this to track things linearly, so that we can track the number of those bounds
+    /// in [`OpaqueTypeStorageEntries`] without a map and can lookup `opaque_hidden_ty_bounds` in O(1).
     opaque_hidden_ty_bounds: Vec<(Ty<'tcx>, ty::OpaqueHiddenTyBound<'tcx>)>,
 }
 

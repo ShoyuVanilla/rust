@@ -49,6 +49,10 @@ where
         self.def_id()
     }
 
+    fn as_normalizes_to(self) -> Option<ty::NormalizesTo<I>> {
+        None
+    }
+
     fn consider_additional_alias_assumptions(
         _ecx: &mut EvalCtxt<'_, D>,
         _goal: Goal<I, Self>,
