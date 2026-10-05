@@ -43,7 +43,7 @@ use crate::solve::ty::may_use_unstable_feature;
 use crate::solve::{
     CanonicalResponse, Certainty, ExternalConstraintsData, FIXPOINT_STEP_LIMIT, Goal,
     GoalEvaluation, GoalSource, GoalStalledOn, GoalStalledOnOpaques, HasChanged, MaybeCause,
-    NestedNormalizationGoals, NoSolution, QueryInput, QueryResult, Response, SucceededInErased,
+    NestedNormalizationGoals, NoSolution, QueryInput, QueryResult, SucceededInErased,
     VisibleForLeakCheck, inspect,
 };
 
@@ -768,7 +768,7 @@ where
         )
         .entered();
 
-        let (result, orig_values, canonical_goal, succeeded_in_erased) = 'retry_canonicalize: {
+        let (result, orig_values, succeeded_in_erased, num_opaques_in_storage) = 'retry_canonicalize: {
             let skip_erased_attempt = match typing_mode {
                 TypingMode::Reflection | TypingMode::Coherence => true,
                 TypingMode::Typeck { .. }
@@ -829,8 +829,8 @@ where
                         break 'retry_canonicalize (
                             canonical_result,
                             orig_values,
-                            canonical_goal,
                             SucceededInErased::Yes { accessed_opaques },
+                            0,
                         );
                     }
                     RerunDecision::EagerlyPropagateToParent => {
@@ -838,10 +838,10 @@ where
                         break 'retry_canonicalize (
                             canonical_result,
                             orig_values,
-                            canonical_goal,
                             // If we're propagating up, we should never retry the goal.
                             // That means `No` is fine to return, it doesn't really matter.
                             SucceededInErased::No,
+                            0,
                         );
                     }
                 }
@@ -857,7 +857,7 @@ where
                 "we run without TypingMode::ErasedNotCoherence, so opaques are available, and we don't retry if the outer typing mode is ErasedNotCoherence: {accessed_opaques:?} after {goal:?}"
             );
 
-            (canonical_result, orig_values, canonical_goal, SucceededInErased::No)
+            (canonical_result, orig_values, SucceededInErased::No, opaque_types.len())
         };
 
         debug!(?result);
@@ -903,7 +903,7 @@ where
                 // to recompute this goal.
                 HasChanged::Yes => None,
                 HasChanged::No => Some(self.build_stalled_on(
-                    canonical_goal,
+                    num_opaques_in_storage,
                     maybe_info,
                     orig_values,
                     succeeded_in_erased,
@@ -919,7 +919,7 @@ where
 
     fn build_stalled_on(
         &self,
-        canonical_goal: I::CanonicalInput,
+        num_opaques_in_storage: usize,
         maybe_info: MaybeInfo,
         stalled_vars: ThinVec<I::GenericArg>,
         previously_succeeded_in_erased: SucceededInErased<I>,
@@ -956,11 +956,7 @@ where
             sub_roots,
             stalled_maybe_info: maybe_info,
             opaques: GoalStalledOnOpaques::Yes {
-                num_opaques_in_storage: canonical_goal
-                    .canonical
-                    .value
-                    .predefined_opaques_in_body
-                    .len(),
+                num_opaques_in_storage,
                 previously_succeeded_in_erased,
             },
         }
@@ -1712,11 +1708,9 @@ where
         let canonical = canonicalize_response(
             self.delegate,
             self.max_input_universe,
-            Response {
-                var_values,
-                certainty,
-                external_constraints: self.cx().mk_external_constraints(external_constraints),
-            },
+            var_values,
+            certainty,
+            external_constraints,
         );
 
         Ok(canonical)

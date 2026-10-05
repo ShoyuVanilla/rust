@@ -2,11 +2,13 @@ use std::collections::hash_map::Entry;
 use std::mem;
 
 use rustc_type_ir::inherent::*;
-use rustc_type_ir::solve::{Goal, QueryInput};
+use rustc_type_ir::solve::inspect::State;
+use rustc_type_ir::solve::{Certainty, ExternalConstraintsData, Goal, QueryInput, Response};
 use rustc_type_ir::{
-    self as ty, Canonical, CanonicalParamEnvCacheEntry, CanonicalVarKind, CanonicalizerState,
-    Const, Flags, InferCtxtLike, Interner, PlaceholderConst, PlaceholderType, PredicateProxy,
-    Region, TypeFlags, TypeFoldable, TypeFolder, TypeSuperFoldable, TypeVisitableExt,
+    self as ty, Canonical, CanonicalParamEnvCacheEntry, CanonicalVarKind, CanonicalVarValues,
+    CanonicalizerState, Const, Flags, InferCtxtLike, Interner, PlaceholderConst, PlaceholderType,
+    PredicateProxy, Region, TypeFlags, TypeFoldable, TypeFolder, TypeSuperFoldable,
+    TypeVisitableExt,
 };
 use thin_vec::ThinVec;
 
@@ -76,18 +78,53 @@ impl<'a, D: SolverDelegate<Interner = I>, I: Interner> Canonicalizer<'a, D, I> {
         Canonicalizer { delegate, canonicalize_mode, state: delegate.obtain_canonicalizer_state() }
     }
 
-    pub(super) fn canonicalize_response<T: TypeFoldable<I>>(
+    pub(super) fn canonicalize_inspect_state<T: TypeFoldable<I>>(
         delegate: &'a D,
         max_input_universe: ty::UniverseIndex,
-        value: T,
-    ) -> ty::Canonical<I, T> {
+        value: State<I, T>,
+    ) -> ty::Canonical<I, State<I, T>> {
         let mut canonicalizer =
             Canonicalizer::new(delegate, CanonicalizeMode::Response { max_input_universe });
-        let value = if value.has_type_flags(NEEDS_CANONICAL) {
-            value.fold_with(&mut canonicalizer)
-        } else {
-            value
+        let value = canonicalizer.canonicalize_value(value);
+        debug_assert!(!value.has_infer(), "unexpected infer in {value:?}");
+        debug_assert!(!value.has_placeholders(), "unexpected placeholders in {value:?}");
+        let (max_universe, _variables, var_kinds) = canonicalizer.finalize();
+
+        Canonical { max_universe, var_kinds, value }
+    }
+
+    pub(super) fn canonicalize_query_response(
+        delegate: &'a D,
+        max_input_universe: ty::UniverseIndex,
+        var_values: CanonicalVarValues<I>,
+        certainty: Certainty,
+        external_constraints: ExternalConstraintsData<I>,
+    ) -> ty::Canonical<I, Response<I>> {
+        let mut canonicalizer =
+            Canonicalizer::new(delegate, CanonicalizeMode::Response { max_input_universe });
+
+        let var_values = canonicalizer.canonicalize_value(var_values);
+
+        let ExternalConstraintsData {
+            region_constraints,
+            opaque_types,
+            normalization_nested_goals,
+        } = external_constraints;
+        let region_constraints = canonicalizer.canonicalize_value(region_constraints);
+        let normalization_nested_goals =
+            canonicalizer.canonicalize_value(normalization_nested_goals);
+        let opaque_types = canonicalizer.filter_and_canonicalize_opaque_types(opaque_types);
+
+        let value = Response {
+            certainty,
+            var_values,
+            external_constraints: delegate.cx().mk_external_constraints(ExternalConstraintsData {
+                region_constraints,
+                opaque_types,
+                normalization_nested_goals,
+            }),
         };
+
         debug_assert!(!value.has_infer(), "unexpected infer in {value:?}");
         debug_assert!(!value.has_placeholders(), "unexpected placeholders in {value:?}");
         let (max_universe, _variables, var_kinds) = canonicalizer.finalize();
@@ -200,24 +237,20 @@ impl<'a, D: SolverDelegate<Interner = I>, I: Interner> Canonicalizer<'a, D, I> {
     /// variable in the future by changing the way we detect global where-bounds.
     pub(super) fn canonicalize_input<P: TypeFoldable<I>>(
         delegate: &'a D,
-        input: QueryInput<I, P>,
+        Goal { param_env, predicate }: Goal<I, P>,
+        predefined_opaques_in_body: Vec<(ty::OpaqueTypeKey<I>, I::Ty)>,
     ) -> (ThinVec<I::GenericArg>, ty::Canonical<I, QueryInput<I, P>>) {
         // First canonicalize the `param_env` while keeping `'static`. This produces a
         // canonicalizer that can canonicalize the rest of the input without keeping `'static`.
-        let (param_env, mut rest_canonicalizer) =
-            Self::canonicalize_param_env(delegate, input.goal.param_env);
+        let (param_env, mut rest_canonicalizer) = Self::canonicalize_param_env(delegate, param_env);
 
-        let predicate = input.goal.predicate;
         let predicate = predicate.fold_with(&mut rest_canonicalizer);
         let goal = Goal { param_env, predicate };
 
-        let predefined_opaques_in_body = input.predefined_opaques_in_body;
         let predefined_opaques_in_body =
-            if predefined_opaques_in_body.has_type_flags(NEEDS_CANONICAL) {
-                predefined_opaques_in_body.fold_with(&mut rest_canonicalizer)
-            } else {
-                predefined_opaques_in_body
-            };
+            rest_canonicalizer.filter_and_canonicalize_opaque_types(predefined_opaques_in_body);
+        let predefined_opaques_in_body =
+            delegate.cx().mk_predefined_opaques_in_body(&predefined_opaques_in_body);
 
         let value = QueryInput { goal, predefined_opaques_in_body };
 
@@ -225,6 +258,10 @@ impl<'a, D: SolverDelegate<Interner = I>, I: Interner> Canonicalizer<'a, D, I> {
         debug_assert!(!value.has_placeholders(), "unexpected placeholders in {value:?}");
         let (max_universe, variables, var_kinds) = rest_canonicalizer.finalize();
         (variables, Canonical { max_universe, var_kinds, value })
+    }
+
+    fn canonicalize_value<T: TypeFoldable<I>>(&mut self, value: T) -> T {
+        if value.has_type_flags(NEEDS_CANONICAL) { value.fold_with(self) } else { value }
     }
 
     fn get_or_insert_bound_var(
@@ -408,6 +445,50 @@ impl<'a, D: SolverDelegate<Interner = I>, I: Interner> Canonicalizer<'a, D, I> {
         let var = self.get_or_insert_bound_var(t, kind);
 
         Ty::new_canonical_bound(self.cx(), var)
+    }
+
+    fn filter_and_canonicalize_opaque_types(
+        &mut self,
+        mut opaque_types: Vec<(ty::OpaqueTypeKey<I>, I::Ty)>,
+    ) -> Vec<(ty::OpaqueTypeKey<I>, I::Ty)> {
+        let mut res = vec![];
+
+        while !opaque_types.is_empty() {
+            let len = res.len();
+            opaque_types.retain(|&(key, hidden_ty)| {
+                if let ty::Infer(ty::TyVar(vid)) = hidden_ty.kind()
+                    && self
+                        .state
+                        .sub_root_lookup_table
+                        .contains_key(&self.delegate.sub_unification_table_root_var(vid))
+                {
+                    res.push(self.canonicalize_value((key, hidden_ty)));
+                    false
+                } else if key.args.iter().all(|arg| {
+                    if let Some(ty::Infer(ty::TyVar(vid))) = arg.as_type().map(|ty| ty.kind()) {
+                        return self
+                            .state
+                            .sub_root_lookup_table
+                            .contains_key(&self.delegate.sub_unification_table_root_var(vid));
+                    };
+                    if let Some(ty::Placeholder(_)) = arg.as_type().map(|ty| ty.kind()) {
+                        return self.state.variables.iter().any(|it| *it == arg);
+                    };
+
+                    true
+                }) {
+                    res.push(self.canonicalize_value((key, hidden_ty)));
+                    false
+                } else {
+                    true
+                }
+            });
+            if res.len() == len {
+                break;
+            }
+        }
+
+        res
     }
 }
 
