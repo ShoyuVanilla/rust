@@ -10,7 +10,7 @@ where
 
 //@ has lifetimes/struct.Foo.html
 //@ has - '//*[@id="synthetic-implementations-list"]//*[@class="impl"]//h3[@class="code-header"]' \
-// "impl<'c, K> Send for Foo<'c, K>where 'c: 'static, K: for<'b> Fn(&'b bool) -> &'c u8,"
+// "impl<'c, K> Send for Foo<'c, K>where Inner<'c, K>: Send"
 //
 //@ has - '//*[@id="synthetic-implementations-list"]//*[@class="impl"]//h3[@class="code-header"]' \
 // "impl<'c, K> Sync for Foo<'c, K>where K: Sync"

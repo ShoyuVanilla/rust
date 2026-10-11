@@ -1064,7 +1064,7 @@ impl<'test> TestCx<'test> {
             .arg("internal_features")
             // FIXME(#160895): While the new solver is enabled by default on nightly,
             // we don't want to use it in our tests for now.
-            .arg("-Znext-solver=coherence")
+            .arg("-Znext-solver=globally")
             .args(&self.props.compile_flags)
             .args(&self.props.doc_flags);
 
