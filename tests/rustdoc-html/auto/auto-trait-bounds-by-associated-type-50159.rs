@@ -17,8 +17,8 @@ where
 }
 
 //@ has foo/struct.Switch.html
-//@ has - '//h3[@class="code-header"]' 'impl<B> Send for Switch<B>where <B as Signal>::Item: Send'
-//@ has - '//h3[@class="code-header"]' 'impl<B> Sync for Switch<B>where <B as Signal>::Item: Sync'
+//@ has - '//h3[@class="code-header"]' 'impl<B> Send for Switch<B>where <B as Signal2>::Item2: Send'
+//@ has - '//h3[@class="code-header"]' 'impl<B> Sync for Switch<B>where <B as Signal2>::Item2: Sync'
 //@ count - '//*[@id="implementations-list"]//*[@class="impl"]' 0
 //@ count - '//*[@id="synthetic-implementations-list"]//*[@class="impl"]' 7
 // The number here will need updating when new auto traits are added:     ^
